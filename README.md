@@ -405,6 +405,26 @@ npm install --save-dev @chester-hill-solutions/ratchet-strap
 bun add --dev @chester-hill-solutions/ratchet-strap
 ```
 
+### Prefer the bare name?
+
+Use an npm alias. npm installs the org-owned package under the bare name, so
+imports and `npx` work without a wrapper package:
+
+```bash
+npm install ratchet-strap@npm:@chester-hill-solutions/ratchet-strap@^0.7.0
+```
+
+```json
+{
+  "devDependencies": {
+    "ratchet-strap": "npm:@chester-hill-solutions/ratchet-strap@^0.7.0"
+  }
+}
+```
+
+The installed manifest remains `@chester-hill-solutions/ratchet-strap`; only the
+local name changes. There is no personal wrapper package in the install path.
+
 Requires Node 20.11 or later.
 
 ## Quick start
