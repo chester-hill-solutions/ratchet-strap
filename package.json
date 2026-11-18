@@ -1,0 +1,60 @@
+{
+  "name": "ratchet-strap",
+  "version": "0.7.0",
+  "description": "Shared lint policies, identity and count ratchets, and verified legacy adoption",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chester-hill-solutions/ratchet-strap.git"
+  },
+  "homepage": "https://github.com/chester-hill-solutions/ratchet-strap#readme",
+  "bugs": "https://github.com/chester-hill-solutions/ratchet-strap/issues",
+  "keywords": [
+    "eslint",
+    "lint",
+    "ratchet",
+    "baseline",
+    "debt",
+    "agents",
+    "ci"
+  ],
+  "engines": {
+    "node": ">=20.11"
+  },
+  "files": [
+    "dist",
+    "assets",
+    "docs",
+    "house-rules",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "bin": {
+    "ratchet-strap": "./dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc && chmod +x dist/cli.js",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.test.json && tsc -p tsconfig.house-rules.json",
+    "test": "bun test src/",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@opentelemetry/sdk-trace-base": "^2.12.0",
+    "@opentelemetry/sdk-trace-node": "^2.12.0",
+    "bun-types": "^1.3.5",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@opentelemetry/api": "1.9.0"
+  }
+}
