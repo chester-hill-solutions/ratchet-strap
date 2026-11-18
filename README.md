@@ -9,6 +9,10 @@
 </p>
 
 <p align="center">
+  <sub>Deterministic set comparison. No LLM, no network, no source parsing.</sub>
+</p>
+
+<p align="center">
   <a href="https://github.com/chester-hill-solutions/ratchet-strap/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/chester-hill-solutions/ratchet-strap/actions/workflows/ci.yml/badge.svg"></a>
   <img alt="Node" src="https://img.shields.io/badge/node-%3E%3D20.11-brightgreen">
   <a href="LICENSE"><img alt="MIT" src="https://img.shields.io/badge/license-MIT-blue"></a>
@@ -75,35 +79,68 @@ RatchetStrap is built so the shortcut is *also* a gate failure:
 | Raise a count budget | Counts are non-increasing |
 | Rerun until it passes | The comparison is deterministic |
 
-## How it works
+## Why
 
-```mermaid
-flowchart LR
-  E[ESLint report] --> A[adapter]
-  A --> O[observation<br/>identities or counts]
-  B[.ratchet-strap.json] --> C{compare}
-  P[trusted predecessor] --> C
-  O --> C
-  C -->|not in baseline| N[added → fail]
-  C -->|baseline missing from report| S[stale → fail]
-  C -->|matches| OK[pass]
-  C -->|baseline grew vs predecessor| G[growth → fail]
+Coding agents are good at making a red check green. Left alone they mock the
+thing under test, sleep until a race usually goes their way, retry the flake,
+raise the timeout, or add an `// eslint-disable`. Every one of those passes CI.
+
+RatchetStrap is built so the shortcut is *also* a gate failure:
+
+| Shortcut | What RatchetStrap does |
+| --- | --- |
+| Fix the code but leave the allowance | `stale` entry fails until `tighten` |
+| Add a violation somewhere else | `added` identity fails |
+| Disable the rule inline | Suppressed diagnostics still count |
+| Add the new identity to the baseline | Predecessor comparison fails |
+| Raise a count budget | Counts are non-increasing |
+| Rerun until it passes | The comparison is deterministic |
+
+## What it actually does
+
+RatchetStrap is a deterministic Node script. It never reads your source. It
+reads the JSON ESLint already produced and compares it with a committed file.
+
+| Actor | Tests | How |
+| --- | --- | --- |
+| **ESLint** | your code against its rules | AST and rule implementations |
+| **RatchetStrap** | ESLint's report against the baseline | exact string set comparison |
+| **the test suite** | RatchetStrap itself | `bun test`, 92 deterministic tests |
+
+```text
+report = spawn(eslint) | read(--report)
+
+for file in report:
+  for message in file.messages ++ file.suppressedMessages:
+    if message.ruleId not in baseline.rules: continue
+    key = "${relative(file)}:${ruleId}:${message.message}"
+    id  = "${key}#${++occurrences[key]}"
+    current[ruleId].add(id)
+
+added = current − baseline
+stale = baseline − current
+ok    = added.empty && stale.empty && errors.empty && growth.empty
+exit  ok ? 0 : 1
 ```
 
-1. **Detect.** RatchetStrap runs your installed ESLint (`--exec-eslint`) or
-   reads a report you already produced (`--report FILE`). It never installs,
-   upgrades or reconfigures ESLint.
-2. **Normalise.** An adapter turns diagnostics into a comparable observation.
-   The default is an **identity**: file, rule, message and occurrence number.
-   Line and column are excluded, so moving unchanged code within a file does not
-   invalidate the baseline. Suppressed messages are included in the numbering.
-3. **Compare.** The observation is diffed against the baseline, and the baseline
-   is diffed against a predecessor (a file, the previous commit, or the CI base
-   ref, depending on the profile). Any new debt, stale allowance, unsuppressed
-   error or baseline growth fails the gate.
-4. **Record.** `init` establishes the baseline once, `tighten` removes repaired
-   entries, and `add` accepts only the initial debt of a new rule. Each refuses
-   to absorb an unrelated regression.
+`spawn` is the only execution. ESLint does the parsing and the rule logic;
+RatchetStrap does set arithmetic on strings and writes one local JSON file.
+
+- **No LLM, no model call, no embeddings.** There is nothing to be
+  non-deterministic about: same report plus same baseline gives the same answer.
+- **No network.** Reports are read from disk or from the child process; baselines
+  are written locally.
+- **No regex over your code.** One regex exists in the matching path:
+  `/\d+/`, used only to pair a lower metric in a message (complexity 21 → 19)
+  with the recorded identity instead of calling it new debt.
+- **Hard errors still fail.** An unsuppressed severity-2 diagnostic fails
+  regardless of the baseline.
+- **When a predecessor is supplied** (`--previous-baseline`), the baseline is
+  checked against it, so an agent cannot add an identity and pass.
+
+What it does **not** do: run your tests, judge whether a rule is correct, decide
+whether a suppression is honest, or inspect source. Those are ESLint's job, your
+review's job, or a test-honesty linter's job.
 
 ## Matching, precisely
 

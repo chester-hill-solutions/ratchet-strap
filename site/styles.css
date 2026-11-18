@@ -377,6 +377,7 @@ section[id], #install { scroll-margin-top: 84px; }
 }
 
 .term pre { margin: 0; padding: 22px 20px 24px; overflow-x: auto; }
+.term-note { margin-top: 14px; font-size: 0.8rem; color: var(--muted); }
 .term code { font-size: 0.8rem; line-height: 1.95; color: var(--ink-2); display: block; }
 .ln { display: block; white-space: pre; }
 .ln + .ln { margin-top: 2px; }
@@ -612,7 +613,7 @@ td em {
   font: 500 0.68rem/1 var(--mono);
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(253, 251, 247, 0.72);
+  color: var(--on-red);
 }
 .band-install code {
   font-size: clamp(0.95rem, 2.1vw, 1.3rem);
@@ -620,11 +621,11 @@ td em {
   color: var(--on-red);
 }
 .copy-band {
-  background: rgba(255, 255, 255, 0.14);
-  border-color: rgba(255, 255, 255, 0.34);
+  background: var(--red-deep);
+  border-color: rgba(255, 255, 255, 0.4);
   color: var(--on-red);
 }
-.copy-band:hover { background: rgba(255, 255, 255, 0.24); color: var(--on-red); }
+.copy-band:hover { background: #a82417; color: var(--on-red); }
 
 .foot-row {
   display: flex;
