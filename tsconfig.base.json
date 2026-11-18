@@ -16,7 +16,7 @@
     "declaration": true,
     "baseUrl": ".",
     "paths": {
-      "ratchet-strap": [
+      "@chester-hill-solutions/ratchet-strap": [
         "./src/index.ts"
       ]
     },

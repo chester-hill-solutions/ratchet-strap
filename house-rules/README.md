@@ -11,7 +11,7 @@ Copy this directory into your repository, then edit `quality.mjs` and
 `golden.mjs`:
 
 ```bash
-cp -R node_modules/ratchet-strap/house-rules ./house-rules
+cp -R node_modules/@chester-hill-solutions/ratchet-strap/house-rules ./house-rules
 ```
 
 The CLI loads `./house-rules/index.mjs` when it exists. Point it elsewhere with
@@ -24,7 +24,7 @@ ratchet-strap rules --house-rules ./house-rules/index.mjs
 Programmatic consumers pass the same module:
 
 ```ts
-import { configureHouseRules } from "ratchet-strap";
+import { configureHouseRules } from "@chester-hill-solutions/ratchet-strap";
 import houseRules from "./house-rules/index.js";
 
 configureHouseRules(houseRules);

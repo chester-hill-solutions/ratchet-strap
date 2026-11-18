@@ -41,6 +41,6 @@ otherwise.
 1. ~~Sanitize the remaining adopter-specific identifiers and fixtures before the
    repository is made public.~~ Done: the public package ships no adopter
    profiles or fixtures.
-2. Publish `ratchet-strap@0.7.0` to npm after the public repository's CI passes.
+2. Publish `@chester-hill-solutions/ratchet-strap@0.7.0` to npm after the public repository's CI passes.
 3. Replace the monorepo's embedded package with the published dependency and a
    private `house-rules` module.

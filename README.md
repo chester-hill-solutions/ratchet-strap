@@ -399,9 +399,9 @@ There is no implicit conversion between the two.
 ## Install
 
 ```bash
-npm install --save-dev ratchet-strap
+npm install --save-dev @chester-hill-solutions/ratchet-strap
 # or
-bun add --dev ratchet-strap
+bun add --dev @chester-hill-solutions/ratchet-strap
 ```
 
 Requires Node 20.11 or later.
@@ -441,7 +441,7 @@ ratchet-strap check --report eslint-report.json
 Copy the starter and edit it:
 
 ```bash
-cp -R node_modules/ratchet-strap/house-rules ./house-rules
+cp -R node_modules/@chester-hill-solutions/ratchet-strap/house-rules ./house-rules
 ```
 
 ```js
@@ -529,7 +529,7 @@ import {
   parseIdentityBaseline,
   evaluateIdentities,
   tightenIdentities,
-} from "ratchet-strap";
+} from "@chester-hill-solutions/ratchet-strap";
 ```
 
 The CLI is the supported surface for most users; the API mirrors it.
