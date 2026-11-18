@@ -45,7 +45,7 @@
       <div class="hero-copy">
         <p class="eyebrow">A ratchet for lint debt</p>
         <h1>Keep the rules on.<br /><span>Make lint debt only go down.</span></h1>
-        <p class="lead">ESLint finds the violations. RatchetStrap compares them with a baseline you review and commit, so a new one fails the build and a repaired one has to be claimed.</p>
+        <p class="lead">ESLint finds the violations. RatchetStrap compares them with a baseline you review and commit, so a new violation fails the build and a repaired one has to be removed from the baseline.</p>
         <p class="lead lead-sub">No sweep, no disabled rule, no allowance nobody remembers granting.</p>
         <div class="actions">
           <a class="btn btn-solid btn-lg" href="#install">Get started</a>
@@ -121,7 +121,7 @@
             <span>01</span>
             <div>
               <h3>Turn the rules on</h3>
-              <p>Enable the ESLint rules you want to ratchet in your flat config. Warnings are what you track.</p>
+              <p>Enable the ESLint rules you want to ratchet in your flat config.</p>
             </div>
           </li>
           <li>
@@ -205,12 +205,12 @@
             <tr><th scope="col">Profile</th><th scope="col">Adapter</th><th scope="col">Comparison</th></tr>
           </thead>
           <tbody>
-            <tr><td><code class="inline">eslint@1</code> <em>default</em></td><td><code class="inline">eslint-identities@1</code></td><td>New and stale identities fail</td></tr>
-            <tr><td><code class="inline">eslint-counts@1</code></td><td><code class="inline">eslint-json@1</code></td><td>Per-rule warning and suppressed counts cannot grow</td></tr>
-            <tr><td><code class="inline">legacy-counts@1</code></td><td><code class="inline">suppression-counts@1</code></td><td>Preserves legacy suppression-comment accounting</td></tr>
-            <tr><td><code class="inline">legacy-identities@1</code></td><td><code class="inline">identities-cycles@1</code></td><td>Preserves identities, import cycles and predecessor protection</td></tr>
-            <tr><td><code class="inline">legacy-messages@1</code></td><td><code class="inline">message-counts@1</code></td><td>Preserves message counts; keep the preceding lint gate</td></tr>
-            <tr><td><code class="inline">legacy-strict-counts@1</code></td><td><code class="inline">strict-counts@1</code></td><td>Preserves strict suppression budgets with a required Git base</td></tr>
+            <tr><td data-label="Profile"><code class="inline">eslint@1</code> <em>default</em></td><td data-label="Adapter"><code class="inline">eslint-identities@1</code></td><td data-label="Comparison">New and stale identities fail</td></tr>
+            <tr><td data-label="Profile"><code class="inline">eslint-counts@1</code></td><td data-label="Adapter"><code class="inline">eslint-json@1</code></td><td data-label="Comparison">Per-rule warning and suppressed counts cannot grow</td></tr>
+            <tr><td data-label="Profile"><code class="inline">legacy-counts@1</code></td><td data-label="Adapter"><code class="inline">suppression-counts@1</code></td><td data-label="Comparison">Preserves legacy suppression-comment accounting</td></tr>
+            <tr><td data-label="Profile"><code class="inline">legacy-identities@1</code></td><td data-label="Adapter"><code class="inline">identities-cycles@1</code></td><td data-label="Comparison">Preserves identities, import cycles and predecessor protection</td></tr>
+            <tr><td data-label="Profile"><code class="inline">legacy-messages@1</code></td><td data-label="Adapter"><code class="inline">message-counts@1</code></td><td data-label="Comparison">Preserves message counts; keep the preceding lint gate</td></tr>
+            <tr><td data-label="Profile"><code class="inline">legacy-strict-counts@1</code></td><td data-label="Adapter"><code class="inline">strict-counts@1</code></td><td data-label="Comparison">Preserves strict suppression budgets with a required Git base</td></tr>
           </tbody>
         </table>
       </div>
@@ -292,7 +292,7 @@
     </div>
     <div>
       <h3>Legal</h3>
-      <a href="https://github.com/chester-hill-solutions/ratchet-strap/blob/main/LICENSE">MIT licence</a>
+      <a href="https://github.com/chester-hill-solutions/ratchet-strap/blob/main/LICENSE">MIT license</a>
       <span class="muted">Chester Hill Solutions</span>
     </div>
   </div>

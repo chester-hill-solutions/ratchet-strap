@@ -18,7 +18,11 @@ export interface GoldenRule {
   title: string;
   /** The rule itself, stated so a change can violate it. */
   rule: string;
+  /** How the rule is proved: engine, contract, ratchet, review or consumer. */
+  enforcement: GoldenEnforcement[];
 }
+
+const engine = (mechanism: string): GoldenEnforcement => ({ kind: "engine", mechanism });
 
 /**
  * Rules every consumer follows. These are the product's contract: they make a
@@ -29,61 +33,73 @@ export const GOLDEN_RULES: readonly GoldenRule[] = Object.freeze([
     id: "U1",
     title: "New debt fails",
     rule: "A change that adds a tracked violation fails the gate. Existing debt may be grandfathered once, explicitly.",
+    enforcement: [engine("check compares the report with the baseline")],
   }),
   Object.freeze({
     id: "U2",
     title: "Baselines only shrink",
     rule: "A baseline may only lose entries. Never raise one to make a change pass.",
+    enforcement: [engine("the predecessor growth guard refuses a raised allowance")],
   }),
   Object.freeze({
     id: "U3",
     title: "Suppressions count",
     rule: "A suppressed or disabled diagnostic still counts as a violation.",
+    enforcement: [engine("adapters count suppressed diagnostics; unsuppressed errors fail")],
   }),
   Object.freeze({
     id: "U4",
     title: "Stale allowances fail",
     rule: "A repaired violation must be removed from the baseline, not left behind as an allowance.",
+    enforcement: [engine("a stale entry fails until tighten removes it")],
   }),
   Object.freeze({
     id: "U5",
     title: "Exemptions are narrow",
     rule: "Every exemption is scoped to one rule, one location and one written reason.",
+    enforcement: [engine("review: the exemption is scoped and recorded")],
   }),
   Object.freeze({
     id: "U6",
     title: "One local command",
     rule: "A single local command runs exactly the same checks as CI.",
+    enforcement: [engine("consumer: one command runs the same checks locally and in CI")],
   }),
   Object.freeze({
     id: "U7",
     title: "Generated files are clean",
     rule: "Generated and checked-in artefacts reproduce with no diff.",
+    enforcement: [engine("consumer: a build-and-diff check proves reproduction")],
   }),
   Object.freeze({
     id: "U8",
     title: "Gates are self-tested",
     rule: "Every gate has a fault and a control fixture proving it rejects the fault and permits the control.",
+    enforcement: [engine("consumer: a fault fixture and a control fixture per gate")],
   }),
   Object.freeze({
     id: "U9",
     title: "No secret material",
     rule: "No secret value reaches a response, log, span, error message or built artefact.",
+    enforcement: [engine("consumer: a secret scan over code and artefacts")],
   }),
   Object.freeze({
     id: "U10",
     title: "Published changes are versioned",
     rule: "A published change carries a version bump and a changelog line.",
+    enforcement: [engine("consumer: a version bump and changelog gate")],
   }),
   Object.freeze({
     id: "U11",
     title: "Mocks preserve exports",
     rule: "A shared module mock keeps the real export surface; never mock away the code under test.",
+    enforcement: [engine("consumer: a mock detector keeps the export surface")],
   }),
   Object.freeze({
     id: "U12",
     title: "Gates cannot disable themselves",
     rule: "Guarded code cannot opt out of the gate that guards it.",
+    enforcement: [engine("review: the gate configuration is protected from the code it guards")],
   }),
 ]);
 
@@ -97,6 +113,7 @@ export type GoldenProfileId = string;
  * rule is available, and the consumer supplies the detector.
  */
 export type GoldenEnforcement =
+  | { kind: "engine"; mechanism: string }
   | { kind: "contract"; id: string }
   | { kind: "review"; anchor: string }
   | { kind: "ratchet"; rule: string }
@@ -127,6 +144,9 @@ export function assertGoldenRules(rules: readonly GoldenRule[] = GOLDEN_RULES): 
     ids.add(rule.id);
     if (!nonEmpty(rule.title)) throw new Error(`${rule.id} must have a non-empty title.`);
     if (!nonEmpty(rule.rule)) throw new Error(`${rule.id} must have a non-empty rule.`);
+    if (!Array.isArray(rule.enforcement) || rule.enforcement.length === 0) {
+      throw new Error(`${rule.id} must name at least one enforcement.`);
+    }
   });
 }
 
@@ -153,6 +173,9 @@ export function assertGoldenProfiles(
       if (!enforced && !hasPending) throw new Error(`${rule.id} must have enforcement or a pending ticket.`);
       if (hasPending && !nonEmpty(rule.pending)) throw new Error(`${rule.id} must name a non-empty pending ticket.`);
       for (const entry of rule.enforcement) {
+        if (entry.kind === "engine" && !nonEmpty(entry.mechanism)) {
+          throw new Error(`${rule.id} must name a non-empty engine mechanism.`);
+        }
         if (entry.kind === "consumer" && !nonEmpty(entry.detector)) {
           throw new Error(`${rule.id} must name a non-empty consumer detector.`);
         }

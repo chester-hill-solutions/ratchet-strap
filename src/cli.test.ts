@@ -71,17 +71,6 @@ describe("RatchetStrap CLI", () => {
     expect(JSON.parse(result.stdout).counts).toEqual(baseline.counts);
   });
 
-  test("import never overwrites a baseline or changes its counts", () => {
-    const legacy = { _comment: "Existing", counts: { complexity: 17, "no-console": 0 } };
-    writeFileSync(join(root, "old.json"), JSON.stringify(legacy));
-    const result = run("import-legacy-counts", "--from", "old.json", "--baseline", "imported.json");
-    expect(result.status).toBe(0);
-    const content = readFileSync(join(root, "imported.json"), "utf8");
-    expect(JSON.parse(content)).toEqual({ ...legacy, schemaVersion: 1, adapter: "suppression-counts@1" });
-    expect(run("import-legacy-counts", "--from", "old.json", "--baseline", "imported.json").status).toBe(2);
-    expect(readFileSync(join(root, "imported.json"), "utf8")).toBe(content);
-  });
-
   test("init records explicit tracked rules including zeros and refuses overwrite", () => {
     expect(run("init", "--rules", "no-console,complexity", "--baseline", "new.json").status).toBe(0);
     expect(JSON.parse(readFileSync(join(root, "new.json"), "utf8")).identities).toEqual({ "no-console": [], complexity: [] });

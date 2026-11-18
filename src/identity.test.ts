@@ -1,8 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import {
-  evaluateIdentities, importLegacyIdentitiesBaseline, parseIdentityBaseline, summarizeIdentities, tightenIdentities,
+  evaluateIdentities, parseIdentityBaseline, summarizeIdentities, tightenIdentities,
 } from "./identity.js";
-import { legacyIdentitiesRuleIds } from "./identity-types.js";
 import type { IdentityBaseline, IdentityObservation } from "./identity-types.js";
 
 const warning = { ruleId: "no-console", severity: 1, message: "Unexpected console", line: 2, column: 1 };
@@ -16,10 +15,6 @@ const report = (messages: unknown[] = [], suppressedMessages: unknown[] = [], fi
 ];
 const observe = (reports: unknown) => summarizeIdentities(reports, Object.keys(baseline.identities), {
   adapter: baseline.adapter, root: "/repo",
-});
-const legacy = (version = 4): Record<string, unknown> => ({
-  version,
-  ...Object.fromEntries(legacyIdentitiesRuleIds.map((rule) => [rule, rule === "no-console" ? [identity] : []])),
 });
 
 describe("identity comparison", () => {
@@ -129,36 +124,10 @@ describe("predecessor budgets", () => {
     const observed = observe(report([warning]));
     const differentRules = { ...baseline, identities: { "no-console": [identity] } };
     expect(() => evaluateIdentities(baseline, observed, differentRules)).toThrow("Predecessor");
-    const previous = importLegacyIdentitiesBaseline(legacy(2));
-    const current = importLegacyIdentitiesBaseline(legacy(4));
-    const quickObservation = summarizeIdentities(report([warning]), legacyIdentitiesRuleIds, { adapter: current.adapter, root: "/repo" });
-    expect(() => evaluateIdentities(current, quickObservation, previous)).toThrow("legacy version");
   });
 });
 
-describe("identity baseline parsing and import", () => {
-  for (const version of [2, 4] as const) {
-    test(`legacy identities version ${version} imports every identity and zero entry`, () => {
-      const original = { ...legacy(version), _comment: "Original allowance" };
-      const result = importLegacyIdentitiesBaseline(original);
-      expect(result.schemaVersion).toBe(2);
-      expect(result.adapter).toBe("identities-cycles@1");
-      expect(result.legacyVersion).toBe(version);
-      expect(result._comment).toBe(original._comment);
-      expect(result.identities["no-console"]).toEqual([identity]);
-      expect(Object.keys(result.identities).sort()).toEqual([...legacyIdentitiesRuleIds].sort());
-      expect(result.identities.complexity).toEqual([]);
-    });
-  }
-
-  test("import refuses unknown legacy versions, missing rules, or extra rule IDs", () => {
-    expect(() => importLegacyIdentitiesBaseline(legacy(3))).toThrow("Unsupported");
-    const missing = legacy();
-    delete missing.complexity;
-    expect(() => importLegacyIdentitiesBaseline(missing)).toThrow("eight tracked rules");
-    expect(() => importLegacyIdentitiesBaseline({ ...legacy(), unknown: [] })).toThrow("eight tracked rules");
-  });
-
+describe("identity baseline parsing", () => {
   for (const [name, invalid] of [
     ["schema", { ...baseline, schemaVersion: 1 }],
     ["mode", { ...baseline, mode: "counts" }],
@@ -168,7 +137,6 @@ describe("identity baseline parsing and import", () => {
     ["non-string identity", { ...baseline, identities: { "no-console": [4] } }],
     ["empty identity", { ...baseline, identities: { "no-console": [" "] } }],
     ["missing identity list", { ...baseline, identities: { "no-console": 1 } }],
-    ["invalid legacy metadata", { ...baseline, legacyVersion: 4 }],
     ["invalid comment", { ...baseline, _comment: 12 }],
     ["mixed count budget", { ...baseline, counts: { "no-console": 1 } }],
   ]) {
@@ -199,7 +167,6 @@ describe("observation validation", () => {
       { ...observed, counts: { ...observed.counts, "no-console": 2 } },
       { ...observed, identities: { "no-console": [identity] } },
       { ...observed, counts: { "no-console": 1 } },
-      { ...observed, adapter: "identities-cycles@1" },
       { ...observed, files: 0 },
       { ...observed, files: 0.5 },
     ];

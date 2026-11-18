@@ -3,7 +3,6 @@ import { parseEslintReports } from "./eslint-report.js";
 import type {
   IdentityAdapterId, IdentityBaseline, IdentityEvaluation, IdentityMap, IdentityObservation,
 } from "./identity-types.js";
-import { legacyIdentitiesRuleIds } from "./identity-types.js";
 import { getProfile } from "./profiles.js";
 import type { Diagnostic } from "./types.js";
 import { record } from "./validation.js";
@@ -14,7 +13,7 @@ function sameRules(left: IdentityMap, right: IdentityMap): boolean {
 
 export function parseIdentityBaseline(value: unknown): IdentityBaseline {
   function parseAdapter(value: unknown): IdentityAdapterId {
-    if (value === "eslint-identities@1" || value === "identities-cycles@1") return value;
+    if (value === "eslint-identities@1") return value;
     throw new Error(`Unknown identity adapter: ${String(value)}`);
   }
 
@@ -29,11 +28,6 @@ export function parseIdentityBaseline(value: unknown): IdentityBaseline {
       }
       return [ruleId, [...identities]];
     }));
-  }
-
-  function validateLegacyIdentitiesRules(identities: IdentityMap): void {
-    const expected = Object.fromEntries(legacyIdentitiesRuleIds.map((ruleId) => [ruleId, []]));
-    if (!sameRules(identities, expected)) throw new Error("legacy identities must retain exactly its eight tracked rules");
   }
 
   const input = record(value, "Identity baseline");
@@ -54,11 +48,6 @@ export function parseIdentityBaseline(value: unknown): IdentityBaseline {
   }
   if (input.counts !== undefined) throw new Error("Identity baselines cannot contain count budgets");
   if (input._comment !== undefined && typeof input._comment !== "string") throw new Error("Baseline _comment must be a string");
-  if (input.legacyVersion !== undefined
-    && (adapter !== "identities-cycles@1" || (input.legacyVersion !== 2 && input.legacyVersion !== 4))) {
-    throw new Error("Invalid legacy version for identity baseline");
-  }
-  if (adapter === "identities-cycles@1") validateLegacyIdentitiesRules(identities);
   return {
     ...input,
     schemaVersion: 2,
@@ -67,16 +56,6 @@ export function parseIdentityBaseline(value: unknown): IdentityBaseline {
     identities,
     ...(profileId !== undefined ? { profileId } : {}),
   };
-}
-
-export function importLegacyIdentitiesBaseline(value: unknown): IdentityBaseline {
-  const input = record(value, "legacy identities baseline");
-  if (input.version !== 2 && input.version !== 4) throw new Error("Unsupported legacy identities baseline version; expected 2 or 4");
-  const { version, _comment, ...identities } = input;
-  return parseIdentityBaseline({
-    schemaVersion: 2, mode: "identities", adapter: "identities-cycles@1", legacyVersion: version,
-    identities, ...(_comment !== undefined ? { _comment } : {}),
-  });
 }
 
 export function summarizeIdentities(
@@ -204,9 +183,8 @@ export function evaluateIdentities(
   let baselineGrowth: IdentityMap = {};
   if (previousBaseline) {
     const previous = parseIdentityBaseline(previousBaseline);
-    if (previous.adapter !== current.adapter || previous.legacyVersion !== current.legacyVersion
-      || !sameRules(previous.identities, current.identities)) {
-      throw new Error("Predecessor baseline must have the same adapter, legacy version, and tracked rules");
+    if (previous.adapter !== current.adapter || !sameRules(previous.identities, current.identities)) {
+      throw new Error("Predecessor baseline must have the same adapter and tracked rules");
     }
     baselineGrowth = difference(current.identities, previous.identities);
   }

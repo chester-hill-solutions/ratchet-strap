@@ -1,12 +1,7 @@
 import type { Diagnostic, RuleChange } from "./types.js";
 
-export type IdentityAdapterId = "eslint-identities@1" | "identities-cycles@1";
+export type IdentityAdapterId = "eslint-identities@1";
 export type IdentityMap = Record<string, string[]>;
-
-export const legacyIdentitiesRuleIds = [
-  "max-lines-per-function", "complexity", "@typescript-eslint/no-non-null-assertion",
-  "max-params", "max-depth", "import/no-cycle", "no-return-await", "no-console",
-] as const;
 
 export interface IdentityBaseline {
   schemaVersion: 2;
@@ -14,7 +9,6 @@ export interface IdentityBaseline {
   adapter: IdentityAdapterId;
   identities: IdentityMap;
   profileId?: string;
-  legacyVersion?: 2 | 4;
   _comment?: string;
 }
 

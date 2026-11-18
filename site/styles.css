@@ -280,26 +280,30 @@ h1 span { color: var(--red); display: inline-block; }
 .proof-inner {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px 30px;
+  column-gap: 30px;
+  row-gap: 6px;
   padding: 16px 28px;
   font: 400 0.74rem/1.6 var(--mono);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--muted);
 }
-.proof-inner span { display: inline-flex; align-items: center; gap: 30px; }
+.proof-inner span { display: inline-flex; align-items: center; }
 .proof-inner span + span::before {
   content: "";
   width: 4px;
   height: 4px;
   border-radius: 50%;
   background: #3a3a40;
+  margin-right: 12px;
 }
 
 /* ---------- sections ---------- */
 
 .sect { padding: 96px 0; border-bottom: 1px solid var(--line-soft); }
 .sect h2 { margin-bottom: 18px; }
+
+section[id], #install { scroll-margin-top: 84px; }
 
 .sect-head { max-width: 62ch; margin-bottom: 56px; }
 .sect-head p { color: var(--ink-2); font-size: 1.05rem; margin-top: 16px; }
@@ -363,7 +367,7 @@ h1 span { color: var(--red); display: inline-block; }
 .term-bar span {
   margin-left: 8px;
   font: 400 0.72rem/1 var(--mono);
-  color: #6d6a66;
+  color: #918d86;
 }
 
 .term pre { margin: 0; padding: 22px 20px 24px; overflow-x: auto; }
@@ -374,6 +378,11 @@ h1 span { color: var(--red); display: inline-block; }
 .out { padding-left: 18px; font-size: 0.76rem; }
 .out.bad { color: #ff7a6b; }
 .out.good { color: var(--good); }
+
+@media (max-width: 760px) {
+  .term code { font-size: 0.75rem; }
+  .ln { white-space: pre-wrap; }
+}
 
 /* ---------- steps ---------- */
 
@@ -410,7 +419,7 @@ h1 span { color: var(--red); display: inline-block; }
   border-bottom: 1px solid var(--line-soft);
   font: 400 0.72rem/1 var(--mono);
   letter-spacing: 0.06em;
-  color: #6d6a66;
+  color: #918d86;
 }
 
 .code {
@@ -490,6 +499,37 @@ td em {
   text-transform: uppercase;
   color: var(--red);
   margin-left: 8px;
+}
+
+@media (max-width: 700px) {
+  .table-wrap { overflow-x: visible; background: transparent; border: 0; border-radius: 0; }
+  table { min-width: 0; }
+  thead { display: none; }
+  tbody tr {
+    display: block;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  tbody td {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 14px;
+    align-items: baseline;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  tbody tr td:last-child { border-bottom: 0; }
+  tbody td::before {
+    content: attr(data-label);
+    font: 500 0.64rem/1.6 var(--mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  tbody td code.inline { justify-self: start; }
 }
 
 /* ---------- ledger ---------- */
@@ -642,6 +682,8 @@ td em {
   .foot-grid { grid-template-columns: 1fr; gap: 4px; padding-top: 40px; }
   .foot-base { flex-direction: column; gap: 6px; }
   .install { flex-wrap: wrap; }
+  .proof-inner span + span::before { display: none; }
+  .proof-inner { column-gap: 22px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

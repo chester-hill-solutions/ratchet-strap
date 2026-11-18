@@ -1,11 +1,7 @@
 import { evaluate, parseBaseline, tighten } from "./baseline.js";
 import { summarize } from "./eslint.js";
 import { evaluateIdentities, parseIdentityBaseline, summarizeIdentities, tightenIdentities } from "./identity.js";
-import { summarizeLegacyIdentities } from "./legacy-identities.js";
-import { getProfile, profileForAdapter } from "./profiles.js";
 import { record } from "./validation.js";
-import { evaluateLegacyStrictCounts, parseLegacyStrictCountsBaseline, tightenLegacyStrictCounts } from "./legacy-strict-counts.js";
-import { summarizeLegacyMessages } from "./legacy-messages.js";
 import type { Baseline, Evaluation, Observation, RuleChange } from "./types.js";
 import type { IdentityBaseline, IdentityEvaluation, IdentityObservation } from "./identity-types.js";
 
@@ -26,11 +22,8 @@ export function trackedRules(baseline: RatchetBaseline): string[] {
 
 export function observeBaseline(baseline: RatchetBaseline, reports: unknown, root: string): RatchetObservation {
   const tracked = trackedRules(baseline);
-  if (baseline.adapter === "message-counts@1") return summarizeLegacyMessages(reports, tracked, root);
   if (baseline.schemaVersion === 1) return summarize(reports, tracked, { adapter: baseline.adapter, root });
-  return baseline.adapter === "identities-cycles@1"
-    ? summarizeLegacyIdentities(reports, tracked, { root })
-    : summarizeIdentities(reports, tracked, { adapter: baseline.adapter, root });
+  return summarizeIdentities(reports, tracked, { adapter: baseline.adapter, root });
 }
 
 export function checkBaseline(
@@ -43,12 +36,6 @@ export function checkBaseline(
     return { ...evaluateIdentities(baseline, observed, previous), mode: "identities" };
   }
   if (baseline.schemaVersion !== 1 || "identities" in observed) throw new Error("Observation comparison mode does not match the baseline");
-  if (baseline.adapter === "strict-counts@1" && observed.adapter === "strict-counts@1") {
-    return {
-      ...evaluateLegacyStrictCounts(parseLegacyStrictCountsBaseline(baseline), { ...observed, adapter: "strict-counts@1" }, previous ? parseLegacyStrictCountsBaseline(previous) : undefined),
-      mode: "counts",
-    };
-  }
   const result = evaluate(baseline, observed);
   const baselineGrowth: RuleChange[] = [];
   if (previous) {
@@ -72,19 +59,12 @@ export function tightenBaseline(
 ): RatchetBaseline {
   const result = checkBaseline(baseline, observed, previous);
   if (!result.canTighten) throw new Error("Cannot tighten with new debt, ESLint errors, or baseline growth");
-  if (baseline.schemaVersion === 1 && baseline.adapter === "strict-counts@1" && !("identities" in observed) && observed.adapter === "strict-counts@1") {
-    return tightenLegacyStrictCounts(parseLegacyStrictCountsBaseline(baseline), { ...observed, adapter: "strict-counts@1" }, previous ? parseLegacyStrictCountsBaseline(previous) : undefined);
-  }
   if (baseline.schemaVersion === 2 && "identities" in observed) return tightenIdentities(baseline, observed, previous?.schemaVersion === 2 ? previous : undefined);
   if (baseline.schemaVersion === 1 && !("identities" in observed)) return tighten(baseline, observed);
   throw new Error("Observation comparison mode does not match the baseline");
 }
 
 export function addRules(baseline: RatchetBaseline, rules: readonly string[], reports: unknown, root: string): RatchetBaseline {
-  const profile = baseline.schemaVersion === 2 && baseline.profileId
-    ? getProfile(baseline.profileId)
-    : profileForAdapter(baseline.adapter);
-  if (profile.id !== "eslint@1" && profile.id !== "eslint-counts@1") throw new Error("Compatibility profiles have frozen tracked rules; adopt a generic profile before adding new rules");
   const current = checkBaseline(baseline, observeBaseline(baseline, reports, root));
   if (!current.ok) throw new Error("Repair or tighten the existing baseline before adding rules");
   const existing = new Set(trackedRules(baseline));

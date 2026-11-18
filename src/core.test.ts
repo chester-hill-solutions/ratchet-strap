@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { evaluate, importLegacyCountsBaseline, parseBaseline, tighten } from "./baseline.js";
+import { evaluate, parseBaseline, tighten } from "./baseline.js";
 import { summarize } from "./eslint.js";
 import { qualityPolicy } from "../house-rules/quality.mjs";
 import type { Baseline } from "./types.js";
@@ -55,7 +55,6 @@ describe("RatchetStrap counts", () => {
 
   test("an adapter change or incomplete observation cannot be tightened", () => {
     const observed = observe(report());
-    expect(() => evaluate(baseline, { ...observed, adapter: "suppression-counts@1" })).toThrow("Adapter changed");
     expect(() => tighten(baseline, { ...observed, counts: { "no-console": 0 } })).toThrow("exactly");
     expect(() => evaluate(baseline, { ...observed, counts: { "no-console": NaN, complexity: 0 } })).toThrow("Invalid observation");
   });
@@ -92,15 +91,7 @@ describe("fail-closed inputs", () => {
   test("unknown schema or detector versions do not silently upgrade", () => {
     expect(() => parseBaseline({ ...baseline, schemaVersion: 2 })).toThrow("schemaVersion");
     expect(() => parseBaseline({ ...baseline, adapter: "eslint-json@2" })).toThrow("Unknown adapter");
-    expect(() => parseBaseline({ counts: { a: 1 } })).toThrow("Import legacy");
-  });
-
-  test("importing LegacyCounts preserves all counts, zero entries, and comments", () => {
-    const legacy = { _comment: "Existing debt", counts: { complexity: 12, "no-console": 0 } };
-    expect(importLegacyCountsBaseline(legacy)).toEqual({
-      ...legacy, schemaVersion: 1, adapter: "suppression-counts@1",
-    });
-    expect(() => importLegacyCountsBaseline(baseline)).toThrow("unversioned");
+    expect(() => parseBaseline({ counts: { a: 1 } })).toThrow("schemaVersion");
   });
 
   test("shared rule definitions can be used as ESLint rule entries", () => {

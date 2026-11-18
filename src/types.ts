@@ -1,4 +1,4 @@
-export type AdapterId = "eslint-json@1" | "suppression-counts@1" | "message-counts@1" | "strict-counts@1";
+export type AdapterId = "eslint-json@1";
 
 export interface Baseline {
   schemaVersion: 1;

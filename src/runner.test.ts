@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { runEslint, runLegacyStrictCountsEslint } from "./runner.js";
+import { runEslint } from "./runner.js";
 
 let root: string;
 function executable(body: string, nested = false): void {
@@ -57,10 +57,4 @@ describe("installed ESLint process boundary", () => {
       expect(readFileSync(join(root, "package.json"), "utf8")).toBe(manifest);
     });
   }
-  test("LegacyStrictCounts cannot borrow the ancestor executable and runs with its nested cwd", () => {
-    executable('console.log("[]");');
-    expect(() => runLegacyStrictCountsEslint(root)).toThrow("Install ESLint in packages/legacy-strict-counts-s3");
-    executable('console.log(JSON.stringify({ cwd: process.cwd(), args: process.argv.slice(2) }));', true);
-    expect(runLegacyStrictCountsEslint(root)).toEqual({ cwd: join(root, "packages/legacy-strict-counts-s3"), args: [".", "--format", "json", "--no-cache"] });
-  });
 });

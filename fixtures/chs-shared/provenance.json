@@ -1,8 +1,0 @@
-{
-  "repository": "example/ratchet-strap-fixtures",
-  "ref": "0c12e854d3b3da961278755eefa357f6e2c11dae",
-  "files": {
-    "ratchet.mjs": "a2822003108e1e4e0eb176bbfe07bfe7f24588057a601b1a0fdcb2ec24318391",
-    "scan.mjs": "e3bf9bfcb35a0d21136482bfe6bd142d088bf8b66d8a46045266dfad7dc185c9"
-  }
-}
