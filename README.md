@@ -79,23 +79,6 @@ RatchetStrap is built so the shortcut is *also* a gate failure:
 | Raise a count budget | Counts are non-increasing |
 | Rerun until it passes | The comparison is deterministic |
 
-## Why
-
-Coding agents are good at making a red check green. Left alone they mock the
-thing under test, sleep until a race usually goes their way, retry the flake,
-raise the timeout, or add an `// eslint-disable`. Every one of those passes CI.
-
-RatchetStrap is built so the shortcut is *also* a gate failure:
-
-| Shortcut | What RatchetStrap does |
-| --- | --- |
-| Fix the code but leave the allowance | `stale` entry fails until `tighten` |
-| Add a violation somewhere else | `added` identity fails |
-| Disable the rule inline | Suppressed diagnostics still count |
-| Add the new identity to the baseline | Predecessor comparison fails |
-| Raise a count budget | Counts are non-increasing |
-| Rerun until it passes | The comparison is deterministic |
-
 ## What it actually does
 
 RatchetStrap is a deterministic Node script. It never reads your source. It

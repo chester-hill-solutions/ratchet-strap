@@ -694,9 +694,14 @@ td em {
   .grid4 { grid-template-columns: 1fr; }
   .grid4 li, .grid4 li + li { padding: 22px 0; border-right: 0; }
   .grid4 li + li { border-top: 1px solid var(--line-soft); }
-  .band-inner { min-height: 96px; }
-  .foot-row { flex-direction: column; align-items: flex-start; }
-  .foot-links { gap: 16px 20px; }
+  .band-inner { min-height: 0; padding: 20px 20px 22px; }
+  .band-install { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 6px 12px; }
+  .band-label { grid-column: 1 / -1; font-size: 0.62rem; }
+  .band-install code { font-size: 0.82rem; }
+  .copy-band { padding: 6px 9px; font-size: 0.7rem; }
+  .foot-row { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .foot-links { gap: 10px 18px; }
+  .foot-links a { font-size: 0.82rem; }
   .install { flex-wrap: wrap; }
   .proof-inner span + span::before { display: none; }
   .proof-inner { column-gap: 22px; }
