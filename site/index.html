@@ -288,6 +288,11 @@
           <h2>Let your agent decide.</h2>
           <p class="body">Paste this into the agent that already knows your repository. It measures what ESLint reports today, finds the CI job that would run the gate, and tells you whether adopting this is a one-command change or a migration.</p>
           <p class="body">It reports and stops. Nothing is installed, no config is edited, no baseline is written.</p>
+          <ul class="ticks">
+            <li>A verdict: adopt, adopt after one fix, or not a fit.</li>
+            <li>The count it would baseline on day one, per rule.</li>
+            <li>The exact CI job and command that would run the gate.</li>
+          </ul>
           <p class="fine">Works in Claude Code, Codex, Cursor, or anything with shell access to your repo.</p>
         </div>
         <div class="card">

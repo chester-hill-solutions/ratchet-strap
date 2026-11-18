@@ -227,7 +227,7 @@ h1 span { color: var(--red); display: inline-block; }
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 11px 12px 11px 16px;
-  max-width: 430px;
+  max-width: 100%;
 }
 .install code {
   color: var(--ink-2);
@@ -685,6 +685,7 @@ td em {
   .foot-links { gap: 10px 18px; }
   .foot-links a { font-size: 0.82rem; }
   .install { flex-wrap: wrap; }
+  .install code { white-space: normal; overflow-wrap: anywhere; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -695,9 +696,9 @@ td em {
 /* ---------- agent prompt ---------- */
 
 .agent-prompt {
-  max-height: 340px;
-  overflow: auto;
   margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
   font-size: 0.76rem;
   line-height: 1.7;
   color: var(--ink-2);

@@ -13,6 +13,7 @@
 </p>
 
 <p align="center">
+  <a href="https://www.npmjs.com/package/@chester-hill-solutions/ratchet-strap"><img alt="npm" src="https://img.shields.io/npm/v/@chester-hill-solutions/ratchet-strap?label=npm&color=red"></a>
   <a href="https://github.com/chester-hill-solutions/ratchet-strap/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/chester-hill-solutions/ratchet-strap/actions/workflows/ci.yml/badge.svg"></a>
   <img alt="Node" src="https://img.shields.io/badge/node-%3E%3D20.11-brightgreen">
   <a href="LICENSE"><img alt="MIT" src="https://img.shields.io/badge/license-MIT-blue"></a>
