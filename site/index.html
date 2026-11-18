@@ -4,11 +4,13 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>RatchetStrap — make lint debt only go down</title>
-<meta name="description" content="An open-source CLI that stops lint debt from growing. ESLint finds the violations, RatchetStrap compares them with a baseline you review and commit: new violations fail, repaired ones must be removed." />
+<meta name="description" content="An open-source CLI that stops lint debt from growing. ESLint finds the violations, RatchetStrap compares them with a baseline you commit: new violations fail, repaired ones must be removed." />
 <meta name="theme-color" content="#0d0d0f" />
 <meta property="og:title" content="RatchetStrap — make lint debt only go down" />
 <meta property="og:description" content="Keep the rules on. Accept today's violations once, then fail the build on every new one." />
 <meta property="og:type" content="website" />
+<meta property="og:image" content="https://raw.githubusercontent.com/chester-hill-solutions/ratchet-strap/main/site/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
 <link rel="icon" href="assets/logo-128.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -43,10 +45,9 @@
     <div class="hazard" aria-hidden="true"></div>
     <div class="wrap hero-grid">
       <div class="hero-copy">
-        <p class="eyebrow">A ratchet for lint debt</p>
         <h1>Keep the rules on.<br /><span>Make lint debt only go down.</span></h1>
-        <p class="lead">ESLint finds the violations. RatchetStrap compares them with a baseline you review and commit, so a new violation fails the build and a repaired one has to be removed from the baseline.</p>
-        <p class="lead lead-sub">No sweep, no disabled rule, no allowance nobody remembers granting.</p>
+        <p class="lead">ESLint finds the violations. RatchetStrap compares them with a baseline you commit, so a new violation fails the build and a repaired one has to be removed from the file.</p>
+        <p class="lead lead-sub">A file you can read in a review, instead of a sweep you never finish or a rule you switch off within a week.</p>
         <div class="actions">
           <a class="btn btn-solid btn-lg" href="#install">Get started</a>
           <a class="btn btn-ghost btn-lg" href="https://github.com/chester-hill-solutions/ratchet-strap">View on GitHub</a>
@@ -82,7 +83,7 @@
         <li>
           <span class="num">01</span>
           <h3>Baseline, not sweep</h3>
-          <p>Accept today's violations once, in a file you review and commit. Keep the rule on.</p>
+          <p>Accept today's violations once, in a file you commit. Keep the rule on.</p>
         </li>
         <li>
           <span class="num">02</span>
@@ -118,28 +119,24 @@
         <h2>How it works</h2>
         <ol class="steps">
           <li>
-            <span>01</span>
             <div>
               <h3>Turn the rules on</h3>
               <p>Enable the ESLint rules you want to ratchet in your flat config.</p>
             </div>
           </li>
           <li>
-            <span>02</span>
             <div>
               <h3>Record what exists</h3>
               <p><code class="inline">init</code> writes today's diagnostics to <code class="inline">.ratchet-strap.json</code>. Nothing is fixed, nothing is swept.</p>
             </div>
           </li>
           <li>
-            <span>03</span>
             <div>
               <h3>Check on every run</h3>
               <p><code class="inline">check</code> reruns your ESLint scope and never writes. CI runs the same command.</p>
             </div>
           </li>
           <li>
-            <span>04</span>
             <div>
               <h3>Claim the fixes</h3>
               <p><code class="inline">tighten --write</code> removes the entries you repaired. Leaving one behind keeps failing.</p>
@@ -242,7 +239,7 @@
   <section class="sect" id="start">
     <div class="wrap split">
       <div>
-        <h2>Three commands to stop the bleeding</h2>
+        <h2>Start with three commands</h2>
         <p class="body">Your ESLint setup stays where it is. RatchetStrap records what it already reports, then holds the line.</p>
         <div class="actions">
           <a class="btn btn-solid" href="https://github.com/chester-hill-solutions/ratchet-strap#readme">Read the docs</a>
@@ -265,42 +262,28 @@
 <footer class="site-foot">
   <div class="band">
     <div class="wrap band-inner">
-      <p>Turn on rules. Ship code. Let the debt come down.</p>
+      <div class="band-install">
+        <span class="band-label">Install</span>
+        <code>bun add --dev ratchet-strap</code>
+        <button class="copy copy-band" type="button" data-copy="bun add --dev ratchet-strap">Copy</button>
+      </div>
       <div class="hazard hazard-foot" aria-hidden="true"></div>
     </div>
   </div>
-  <div class="wrap foot-grid">
-    <div>
-      <h3>Product</h3>
-      <a href="#why">Why</a>
-      <a href="#how">How it works</a>
-      <a href="#profiles">Profiles</a>
-      <a href="#rules">Golden defaults</a>
-    </div>
-    <div>
-      <h3>Docs</h3>
+  <div class="wrap foot-row">
+    <p>RatchetStrap <span class="muted">v0.7.0</span> · MIT · Chester Hill Solutions</p>
+    <nav class="foot-links" aria-label="Project">
       <a href="https://github.com/chester-hill-solutions/ratchet-strap#readme">README</a>
       <a href="https://github.com/chester-hill-solutions/ratchet-strap/blob/main/CHANGELOG.md">Changelog</a>
       <a href="https://github.com/chester-hill-solutions/ratchet-strap/blob/main/house-rules/README.md">House rules</a>
-      <a href="https://github.com/chester-hill-solutions/ratchet-strap#api">API</a>
-    </div>
-    <div>
-      <h3>Source</h3>
-      <a href="https://github.com/chester-hill-solutions/ratchet-strap">GitHub</a>
       <a href="https://github.com/chester-hill-solutions/ratchet-strap/issues">Issues</a>
+      <a href="https://github.com/chester-hill-solutions/ratchet-strap">GitHub</a>
       <a href="https://www.npmjs.com/package/ratchet-strap">npm</a>
-    </div>
-    <div>
-      <h3>Legal</h3>
-      <a href="https://github.com/chester-hill-solutions/ratchet-strap/blob/main/LICENSE">MIT license</a>
-      <span class="muted">Chester Hill Solutions</span>
-    </div>
-  </div>
-  <div class="wrap foot-base">
-    <span>RatchetStrap <span class="muted">v0.7.0</span></span>
-    <span class="muted">MIT · open source</span>
+    </nav>
   </div>
 </footer>
+
+<div class="sr-only" role="status" aria-live="polite" id="copy-status"></div>
 
 <script>
   const btn = document.querySelector(".nav-btn");
@@ -322,6 +305,7 @@
       try {
         await navigator.clipboard.writeText(b.dataset.copy);
         b.textContent = "Copied";
+        document.getElementById("copy-status").textContent = "Install command copied";
       } catch {
         b.textContent = "Select it";
       }

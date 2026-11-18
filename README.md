@@ -105,6 +105,46 @@ flowchart LR
    entries, and `add` accepts only the initial debt of a new rule. Each refuses
    to absorb an unrelated regression.
 
+## Matching, precisely
+
+An identity is a string:
+
+```text
+app/mail.js:max-params:Function 'sendMessage' has too many parameters (6). Maximum allowed is 5.#1
+└─────┬────┘ └───┬────┘ └──────────────────────────┬──────────────────────────────────┘ └┬┘
+      file      rule                            message                              occurrence
+```
+
+- **File** is relative to `--root`, with forward slashes. Duplicate file results in
+  one report are rejected.
+- **Only tracked rules** get identities. An untracked warning is ignored; an
+  unsuppressed error always fails.
+- **Occurrence** counts identical `(rule, file, message)` triples in report order,
+  across `messages` then `suppressedMessages`. Suppressing a diagnostic moves
+  it between those arrays without changing its key, so the identity survives.
+- **Line and column are not in the key.** Moving code, reordering imports or
+  reformatting inside the file does not invalidate the baseline.
+- Comparison is exact set difference per rule: present-now-but-not-in-baseline is
+  `added`; in-baseline-but-not-present is `stale`. Both fail.
+
+| Edit | Identity result |
+| --- | --- |
+| Move the function down 40 lines | unchanged → pass |
+| Add a second identical warning | new `#2` → `added` → fail |
+| Remove one of two identical warnings | `#2` disappears → `stale` → fail until tightened |
+| Suppress the warning | same key, now suppressed → unchanged → still counted |
+| Rename the file or change the message | old is `stale`, new is `added` → fail |
+| Lower an embedded metric (complexity 21 → 19) | paired as an improvement, not new debt |
+
+That last case is the one concession to cleverness. An identity embeds its
+metric, so a lower number would otherwise look like one new identity plus one
+stale one. `reconcileImprovements` pairs a candidate with a stale identity that
+has the same shape and exactly one lower number. A higher number stays `added`.
+
+Counts mode does not do any of this: it compares per-rule totals, so one repair
+can offset one new violation of the same rule. That is why identities are the
+default and counts are opt-in.
+
 ## A worked example
 
 Suppose the baseline carries one known violation:
