@@ -28,6 +28,7 @@
     </a>
     <button class="nav-btn" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
     <nav class="nav" id="nav" aria-label="Primary">
+      <a href="#examples">Examples</a>
       <a href="#why">Why</a>
       <a href="#how">How it works</a>
       <a href="#house-rules">House rules</a>
@@ -69,7 +70,43 @@
         <span>ESLint-native</span>
         <span>JSON and exit codes</span>
         <span>House rules you own</span>
+        <span>No LLM, no network</span>
       </div>
+    </div>
+  </section>
+
+  <section class="sect" id="examples">
+    <div class="wrap">
+      <div class="sect-head">
+        <h2>Two things that used to slip through.</h2>
+        <p>The detectors are your house rules; RatchetStrap ships none. These are the findings a warning-only setup never fixes, and they are what the baseline is for.</p>
+      </div>
+      <div class="split">
+        <article class="card">
+          <div class="card-head"><span>01 · derived state</span><span>house/no-derived-effect</span></div>
+          <pre class="code"><code>// before
+const [fullName, setFullName] = useState("");
+useEffect(() => {
+  setFullName(`${first} ${last}`);
+}, [first, last]);</code></pre>
+          <p class="card-foot">Compute it during render instead: <code class="inline">const fullName = `${first} ${last}`;</code>. The effect is an <code class="inline">added</code> identity; the gate exits 1.</p>
+        </article>
+        <article class="card">
+          <div class="card-head"><span>02 · implicit state</span><span>house/explicit-state-machine</span></div>
+          <pre class="code"><code>// before
+const [loading, setLoading] = useState(false);
+const [error, setError] = useState&lt;Error | null&gt;(null);
+const [data, setData] = useState&lt;Data | null&gt;(null);</code></pre>
+          <pre class="code"><code>// after
+type OrderState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "ready"; data: Data }
+  | { status: "failed"; error: Error };</code></pre>
+          <p class="card-foot"><code class="inline">loading &amp;&amp; error</code> becomes unrepresentable. The old finding stays <code class="inline">stale</code> until <code class="inline">tighten --write</code> records the repair.</p>
+        </article>
+      </div>
+      <p class="fine">The rule IDs are house-rule names, not detectors bundled here. Any ESLint rule works; RatchetStrap makes the new finding fail, the repair visible, and the suppression count.</p>
     </div>
   </section>
 
@@ -118,6 +155,7 @@
       <p class="term-note">Output abridged. Every command prints JSON.</p>
       <div>
         <h2>How it works</h2>
+        <p class="body">A Node script: spawn your ESLint, build one identity string per diagnostic, set-diff against the committed baseline. No model calls, no network, no source parsing.</p>
         <ol class="steps">
           <li>
             <div>
@@ -196,7 +234,7 @@
   <section class="sect" id="profiles">
     <div class="wrap">
       <h2>Profiles</h2>
-      <p class="body">A profile selects a comparison mode, an adapter and runner defaults. New projects use <code class="inline">eslint@1</code>; the rest preserve a legacy format that a repository already depends on.</p>
+      <p class="body">A profile selects a comparison mode and an adapter. New projects use <code class="inline">eslint@1</code>; a project that already has a count budget can adopt <code class="inline">eslint-counts@1</code> deliberately.</p>
       <div class="table-wrap">
         <table>
           <thead>
@@ -205,10 +243,6 @@
           <tbody>
             <tr><td data-label="Profile"><code class="inline">eslint@1</code> <em>default</em></td><td data-label="Adapter"><code class="inline">eslint-identities@1</code></td><td data-label="Comparison">New and stale identities fail</td></tr>
             <tr><td data-label="Profile"><code class="inline">eslint-counts@1</code></td><td data-label="Adapter"><code class="inline">eslint-json@1</code></td><td data-label="Comparison">Per-rule warning and suppressed counts cannot grow</td></tr>
-            <tr><td data-label="Profile"><code class="inline">legacy-counts@1</code></td><td data-label="Adapter"><code class="inline">suppression-counts@1</code></td><td data-label="Comparison">Preserves legacy suppression-comment accounting</td></tr>
-            <tr><td data-label="Profile"><code class="inline">legacy-identities@1</code></td><td data-label="Adapter"><code class="inline">identities-cycles@1</code></td><td data-label="Comparison">Preserves identities, import cycles and predecessor protection</td></tr>
-            <tr><td data-label="Profile"><code class="inline">legacy-messages@1</code></td><td data-label="Adapter"><code class="inline">message-counts@1</code></td><td data-label="Comparison">Preserves message counts; keep the preceding lint gate</td></tr>
-            <tr><td data-label="Profile"><code class="inline">legacy-strict-counts@1</code></td><td data-label="Adapter"><code class="inline">strict-counts@1</code></td><td data-label="Comparison">Preserves strict suppression budgets with a required Git base</td></tr>
           </tbody>
         </table>
       </div>
@@ -234,6 +268,7 @@
         <li><span class="rid">U11</span><p>A shared module mock keeps the real export surface.</p></li>
         <li><span class="rid">U12</span><p>Guarded code cannot opt out of the gate that guards it.</p></li>
       </ul>
+      <p class="fine">U1–U4 are enforced by this engine. U5 and U12 are review. The rest are consumer gates; the README names the mechanism for each.</p>
     </div>
   </section>
 
@@ -272,7 +307,7 @@
     </div>
   </div>
   <div class="wrap foot-row">
-    <p>RatchetStrap <span class="muted">v0.7.0</span> · MIT · Chester Hill Solutions</p>
+    <p><span>RatchetStrap <span class="muted">v0.7.0</span> · MIT</span> <span class="co">Chester Hill Solutions</span></p>
     <nav class="foot-links" aria-label="Project">
       <a href="https://github.com/chester-hill-solutions/ratchet-strap#readme">README</a>
       <a href="https://github.com/chester-hill-solutions/ratchet-strap/blob/main/CHANGELOG.md">Changelog</a>

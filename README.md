@@ -62,6 +62,62 @@ There is no "pass with new warnings". A green run means the baseline and the
 report still describe the same debt, and that the baseline has not grown since
 the last reviewed revision.
 
+## Two examples
+
+The detectors are your house rules; RatchetStrap ships none. These two are the
+kind of finding that a warning-only setup never fixes, and they are what the
+baseline is for.
+
+### 1. The effect that should be a value
+
+```tsx
+const [fullName, setFullName] = useState("");
+useEffect(() => {
+  setFullName(`${first} ${last}`);
+}, [first, last]);
+```
+
+Report:
+
+```text
+src/profile.tsx:house/no-derived-effect:This effect derives state from props. Compute it during render; an effect adds a render pass and a stale frame.#1
+```
+
+```tsx
+const fullName = `${first} ${last}`;
+```
+
+### 2. The implicit state machine
+
+```tsx
+const [loading, setLoading] = useState(false);
+const [error, setError] = useState<Error | null>(null);
+const [data, setData] = useState<Data | null>(null);
+```
+
+Report:
+
+```text
+src/order.tsx:house/explicit-state-machine:Three booleans encode an implicit state machine. Replace them with a discriminated union and a named event reducer.#1
+```
+
+```tsx
+type OrderState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "ready"; data: Data }
+  | { status: "failed"; error: Error };
+```
+
+`loading && error`, `data && loading` and "three booleans, eight combinations, four of them impossible" become
+unrepresentable. The old diagnostic does not disappear on its own: it becomes
+`stale`, and `tighten --write` is the reviewed act that removes it.
+
+Both examples work the same way as any other ESLint rule. The rule IDs above are
+house-rule names, not detectors bundled here. What RatchetStrap adds is that the
+new finding fails, the repaired one must be recorded, and neither can be hidden
+by suppressing it or editing the baseline.
+
 ## Why
 
 Coding agents are good at making a red check green. Left alone they mock the
