@@ -1,6 +1,6 @@
 {
   "name": "@chester-hill-solutions/ratchet-strap",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Shared lint policies, identity and count ratchets, and verified legacy adoption",
   "type": "module",
   "license": "MIT",

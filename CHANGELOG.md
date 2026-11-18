@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.1 — 2026-11-18
+
+- Documented the npm alias for installing under the bare `ratchet-strap` name
+  without publishing a personal wrapper package.
+- The README now leads with the deterministic mechanism and the two house-rule
+  examples.
+
 ## 0.7.0 — 2026-11-17
 
 First public release.
