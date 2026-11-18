@@ -29,6 +29,10 @@ trusted revision, so it cannot be raised to make a change pass.
 The engine is deliberately opinion-free: thresholds, named profiles and enabled
 golden rules live in a `house-rules/` directory your repository owns.
 
+> **Not a linter.** RatchetStrap ships no rules and never reads your source.
+> ESLint detects; RatchetStrap ratchets the report. If you do not run ESLint,
+> there is nothing here to ratchet.
+
 ```console
 $ ratchet-strap check --exec-eslint
 {
@@ -61,62 +65,6 @@ That is the whole product. Three outcomes:
 There is no "pass with new warnings". A green run means the baseline and the
 report still describe the same debt, and that the baseline has not grown since
 the last reviewed revision.
-
-## Two examples
-
-The detectors are your house rules; RatchetStrap ships none. These two are the
-kind of finding that a warning-only setup never fixes, and they are what the
-baseline is for.
-
-### 1. The effect that should be a value
-
-```tsx
-const [fullName, setFullName] = useState("");
-useEffect(() => {
-  setFullName(`${first} ${last}`);
-}, [first, last]);
-```
-
-Report:
-
-```text
-src/profile.tsx:house/no-derived-effect:This effect derives state from props. Compute it during render; an effect adds a render pass and a stale frame.#1
-```
-
-```tsx
-const fullName = `${first} ${last}`;
-```
-
-### 2. The implicit state machine
-
-```tsx
-const [loading, setLoading] = useState(false);
-const [error, setError] = useState<Error | null>(null);
-const [data, setData] = useState<Data | null>(null);
-```
-
-Report:
-
-```text
-src/order.tsx:house/explicit-state-machine:Three booleans encode an implicit state machine. Replace them with a discriminated union and a named event reducer.#1
-```
-
-```tsx
-type OrderState =
-  | { status: "idle" }
-  | { status: "loading" }
-  | { status: "ready"; data: Data }
-  | { status: "failed"; error: Error };
-```
-
-`loading && error`, `data && loading` and "three booleans, eight combinations, four of them impossible" become
-unrepresentable. The old diagnostic does not disappear on its own: it becomes
-`stale`, and `tighten --write` is the reviewed act that removes it.
-
-Both examples work the same way as any other ESLint rule. The rule IDs above are
-house-rule names, not detectors bundled here. What RatchetStrap adds is that the
-new finding fails, the repaired one must be recorded, and neither can be hidden
-by suppressing it or editing the baseline.
 
 ## Why
 
@@ -180,6 +128,171 @@ RatchetStrap does set arithmetic on strings and writes one local JSON file.
 What it does **not** do: run your tests, judge whether a rule is correct, decide
 whether a suppression is honest, or inspect source. Those are ESLint's job, your
 review's job, or a test-honesty linter's job.
+
+## ESLint in one minute
+
+RatchetStrap is a ledger for ESLint. It contains no lint rules.
+
+1. **You give ESLint a config.** A flat config names the files, the parser, the
+   plugins and the rules.
+2. **ESLint parses each file into a tree** (an AST) and runs the rules you
+   enabled. A rule is ordinary JavaScript that visits nodes.
+3. **A rule reports a message** with a rule id, a severity, text and a position.
+4. **ESLint prints the report.** With `--format json` it is one array of files,
+   each with `messages` and `suppressedMessages`. That array is the entire input
+   RatchetStrap sees.
+
+A rule is small enough to read:
+
+```js
+// eslint.config.mjs — deliberately crude: flags every useEffect
+const house = {
+  rules: {
+    "no-derived-effect": {
+      meta: { messages: { derived: "Compute this during render." } },
+      create(context) {
+        return {
+          CallExpression(node) {
+            if (node.callee.type === "Identifier" && node.callee.name === "useEffect") {
+              context.report({ node, messageId: "derived" });
+            }
+          },
+        };
+      },
+    },
+  },
+};
+
+export default [{
+  files: ["**/*.tsx"],
+  plugins: { house },
+  rules: { "house/no-derived-effect": "warn" },
+}];
+```
+
+That produces:
+
+```json
+[{
+  "filePath": "/repo/src/profile.tsx",
+  "messages": [{
+    "ruleId": "house/no-derived-effect",
+    "severity": 1,
+    "message": "Compute this during render.",
+    "line": 4,
+    "column": 3
+  }],
+  "suppressedMessages": []
+}]
+```
+
+- **Built-in rules** include `no-console`, `complexity`, `max-params` and
+  `no-restricted-syntax`. **Plugin rules** (`react-hooks/*`,
+  `@typescript-eslint/*`) come from packages. **House rules** like
+  `house/no-derived-effect` are local plugins in your repository.
+- `"warn"` does not fail ESLint by itself; that is why an agent can ignore it.
+  RatchetStrap treats a tracked warning as debt and fails the gate when it grows.
+  `"error"` fails regardless of the baseline and is not grandfathered.
+- `// eslint-disable-next-line house/no-derived-effect` moves the message to
+  `suppressedMessages`. RatchetStrap counts both arrays, so the debt remains.
+
+The two examples above are house rules. RatchetStrap does not know what a
+`useEffect` or a boolean is; it knows the rule id and the message.
+
+## Two examples
+
+The detectors are your house rules; RatchetStrap ships none. These are the
+findings a warning-only setup never fixes, and they are what the baseline is for.
+
+### 1. The effect that should be a value
+
+**Before**
+
+```tsx
+const [fullName, setFullName] = useState("");
+useEffect(() => {
+  setFullName(`${first} ${last}`);
+}, [first, last]);
+```
+
+The house rule reports:
+
+```text
+src/profile.tsx:house/no-derived-effect:This effect derives state from props. Compute it during render; an effect adds a render pass and a stale frame.#1
+```
+
+The rule is tracked and the baseline has no allowance for this identity, so
+`check` says:
+
+```json
+{
+  "ok": false,
+  "added": {
+    "house/no-derived-effect": ["src/profile.tsx:...#1"]
+  }
+}
+```
+
+`exit 1`. The rule stays on; disabling it moves the diagnostic to
+`suppressedMessages`, where it still counts.
+
+**After**
+
+```tsx
+const fullName = `${first} ${last}`;
+```
+
+The diagnostic is gone. If it had already been in the baseline, the entry would
+now be `stale`, and `tighten --write` would be the reviewed act that removes it.
+
+### 2. The implicit state machine
+
+**Before**
+
+```tsx
+const [loading, setLoading] = useState(false);
+const [error, setError] = useState<Error | null>(null);
+const [data, setData] = useState<Data | null>(null);
+```
+
+The house rule reports:
+
+```text
+src/order.tsx:house/explicit-state-machine:Three booleans encode an implicit state machine. Replace them with a discriminated union and a named event reducer.#1
+```
+
+`check` fails the same way: the identity is not in the baseline.
+
+```json
+{
+  "ok": false,
+  "added": {
+    "house/explicit-state-machine": ["src/order.tsx:...#1"]
+  }
+}
+```
+
+`exit 1`. `loading && error` is representable today, and the rule is only a
+warning until the ratchet holds it.
+
+**After**
+
+```tsx
+type OrderState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "ready"; data: Data }
+  | { status: "failed"; error: Error };
+```
+
+Three booleans with eight combinations and several impossible ones become four
+states. The diagnostic is gone; an old baseline entry would be `stale` until
+tightened.
+
+Both examples are ordinary ESLint findings. The rule IDs are house-rule names,
+not detectors bundled here. What RatchetStrap adds is that the new finding fails,
+the repaired one must be recorded, and neither can be hidden by suppressing it
+or editing the baseline.
 
 ## Matching, precisely
 

@@ -46,6 +46,7 @@
     <div class="hazard" aria-hidden="true"></div>
     <div class="wrap hero-grid">
       <div class="hero-copy">
+        <p class="kicker">Not a linter. A ratchet for ESLint.</p>
         <h1>Keep the rules on.<br /><span>Make lint debt only go down.</span></h1>
         <p class="lead">ESLint finds the violations. RatchetStrap compares them with a baseline you commit, so a new violation fails the build and a repaired one has to be removed from the file.</p>
         <p class="lead lead-sub">A file you can read in a review, instead of a sweep you never finish or a rule you switch off within a week.</p>
@@ -79,31 +80,57 @@
     <div class="wrap">
       <div class="sect-head">
         <h2>Two things that used to slip through.</h2>
-        <p>The detectors are your house rules; RatchetStrap ships none. These are the findings a warning-only setup never fixes, and they are what the baseline is for.</p>
+        <p>RatchetStrap ships none of these rules; ESLint does the detection. These are the findings a warning-only setup never fixes, and they are what the baseline is for. No ESLint, nothing to ratchet.</p>
       </div>
-      <div class="split">
+      <div class="split examples">
         <article class="card">
           <div class="card-head"><span>01 · derived state</span><span>house/no-derived-effect</span></div>
-          <pre class="code"><code>// before
-const [fullName, setFullName] = useState("");
-useEffect(() => {
-  setFullName(`${first} ${last}`);
+          <div class="code-block">
+            <div class="code-label"><i class="dot bad"></i> before</div>
+            <pre class="code"><code><span class="tok-c">// effect derives state from props</span>
+<span class="tok-k">const</span> [fullName, setFullName] = <span class="tok-f">useState</span>(<span class="tok-s">""</span>);
+<span class="tok-f">useEffect</span>(() <span class="tok-p">=&gt;</span> {
+  <span class="tok-f">setFullName</span>(<span class="tok-s">`${first} ${last}`</span>);
 }, [first, last]);</code></pre>
-          <p class="card-foot">Compute it during render instead: <code class="inline">const fullName = `${first} ${last}`;</code>. The effect is an <code class="inline">added</code> identity; the gate exits 1.</p>
+          </div>
+          <div class="code-block">
+            <div class="code-label"><i class="dot bad"></i> check</div>
+            <pre class="code code-error"><code><span class="err">added</span>  house/no-derived-effect
+       src/profile.tsx:...#1
+<span class="err">exit 1</span>  new debt</code></pre>
+          </div>
+          <p class="card-foot">The rule is on and the baseline has no allowance for this identity, so the gate exits 1. A disable comment moves it to suppressed messages, where it still counts.</p>
+          <div class="code-block">
+            <div class="code-label"><i class="dot good"></i> after</div>
+            <pre class="code"><code><span class="tok-k">const</span> fullName = <span class="tok-s">`${first} ${last}`</span>;</code></pre>
+          </div>
+          <p class="card-foot">One render, no stale frame. If the finding had been baselined, <code class="inline">tighten --write</code> would remove the now-stale entry.</p>
         </article>
+
         <article class="card">
           <div class="card-head"><span>02 · implicit state</span><span>house/explicit-state-machine</span></div>
-          <pre class="code"><code>// before
-const [loading, setLoading] = useState(false);
-const [error, setError] = useState&lt;Error | null&gt;(null);
-const [data, setData] = useState&lt;Data | null&gt;(null);</code></pre>
-          <pre class="code"><code>// after
-type OrderState =
-  | { status: "idle" }
-  | { status: "loading" }
-  | { status: "ready"; data: Data }
-  | { status: "failed"; error: Error };</code></pre>
-          <p class="card-foot"><code class="inline">loading &amp;&amp; error</code> becomes unrepresentable. The old finding stays <code class="inline">stale</code> until <code class="inline">tighten --write</code> records the repair.</p>
+          <div class="code-block">
+            <div class="code-label"><i class="dot bad"></i> before</div>
+            <pre class="code"><code><span class="tok-k">const</span> [loading, setLoading] = <span class="tok-f">useState</span>(<span class="tok-s">false</span>);
+<span class="tok-k">const</span> [error, setError] = <span class="tok-f">useState</span>&lt;<span class="tok-t">Error</span> | <span class="tok-t">null</span>&gt;(<span class="tok-s">null</span>);
+<span class="tok-k">const</span> [data, setData] = <span class="tok-f">useState</span>&lt;<span class="tok-t">Data</span> | <span class="tok-t">null</span>&gt;(<span class="tok-s">null</span>);</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-label"><i class="dot bad"></i> check</div>
+            <pre class="code code-error"><code><span class="err">added</span>  house/explicit-state-machine
+       src/order.tsx:...#1
+<span class="err">exit 1</span>  new debt</code></pre>
+          </div>
+          <p class="card-foot"><code class="inline">loading &amp;&amp; error</code> is representable today. The rule is only a warning until the ratchet holds it.</p>
+          <div class="code-block">
+            <div class="code-label"><i class="dot good"></i> after</div>
+            <pre class="code"><code><span class="tok-k">type</span> <span class="tok-t">OrderState</span> =
+  | { status: <span class="tok-s">"idle"</span> }
+  | { status: <span class="tok-s">"loading"</span> }
+  | { status: <span class="tok-s">"ready"</span>; data: <span class="tok-t">Data</span> }
+  | { status: <span class="tok-s">"failed"</span>; error: <span class="tok-t">Error</span> };</code></pre>
+          </div>
+          <p class="card-foot">Four states instead of eight combinations; impossible states are unrepresentable. Old baseline entries become <code class="inline">stale</code> until tightened.</p>
         </article>
       </div>
       <p class="fine">The rule IDs are house-rule names, not detectors bundled here. Any ESLint rule works; RatchetStrap makes the new finding fail, the repair visible, and the suppression count.</p>
