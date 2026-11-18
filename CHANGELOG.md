@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.2 — 2026-11-18
+
+- The build now removes `dist` before compiling, so deleted modules cannot ship
+  as stale compiled files.
+- Bare-name npm alias documented.
+- README leads with the deterministic mechanism and the two house-rule examples.
+
 ## 0.7.1 — 2026-11-18
 
 - Documented the npm alias for installing under the bare `ratchet-strap` name

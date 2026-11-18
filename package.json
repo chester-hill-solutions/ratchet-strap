@@ -1,6 +1,6 @@
 {
   "name": "@chester-hill-solutions/ratchet-strap",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "Shared lint policies, identity and count ratchets, and verified legacy adoption",
   "type": "module",
   "license": "MIT",
@@ -54,7 +54,8 @@
     "build": "rm -rf dist && tsc && chmod +x dist/cli.js",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.test.json && tsc -p tsconfig.house-rules.json",
     "test": "bun test src/",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "deploy": "cf deploy"
   },
   "devDependencies": {
     "bun-types": "^1.3.5",

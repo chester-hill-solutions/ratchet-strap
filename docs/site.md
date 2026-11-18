@@ -14,7 +14,7 @@ cd site && python3 -m http.server 8788
 From the repository root:
 
 ```bash
-cf deploy
+bun run deploy   # cf deploy
 ```
 
 `cloudflare.config.ts` names the Worker (`ratchetstrap`), its custom domain and
@@ -40,6 +40,11 @@ platform, not served.
   because the site is static.
 
 ## Rules
+
+Profiles and the twelve golden defaults are not repeated on the page; the
+quickstart links to their README anchors. A public page states a condition
+whenever a guarantee has one — "cannot be raised" only holds with
+`--previous-baseline` or full history in CI, and the page says so.
 
 Product claims come from the root `README.md`. If a command, profile or exit
 code changes there, change it here in the same pull request. The `U1`-`U12` list
