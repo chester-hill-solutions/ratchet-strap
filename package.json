@@ -13,10 +13,18 @@
   "keywords": [
     "eslint",
     "lint",
+    "linting",
     "ratchet",
     "baseline",
-    "debt",
-    "agents",
+    "technical-debt",
+    "code-quality",
+    "static-analysis",
+    "developer-tools",
+    "quality-gate",
+    "ai-agents",
+    "typescript",
+    "javascript",
+    "nodejs",
     "ci"
   ],
   "engines": {

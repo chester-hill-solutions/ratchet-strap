@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RatchetStrap — make lint debt only go down</title>
+<meta name="description" content="An open-source CLI that stops lint debt from growing. ESLint finds the violations, RatchetStrap compares them with a baseline you review and commit: new violations fail, repaired ones must be removed." />
+<meta name="theme-color" content="#0d0d0f" />
+<meta property="og:title" content="RatchetStrap — make lint debt only go down" />
+<meta property="og:description" content="Keep the rules on. Accept today's violations once, then fail the build on every new one." />
+<meta property="og:type" content="website" />
+<link rel="icon" href="assets/logo-128.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-head">
+  <div class="wrap head-inner">
+    <a class="brand" href="#top">
+      <img src="assets/logo-128.png" alt="" width="34" height="34" />
+      <span class="brand-name">RatchetStrap</span>
+    </a>
+    <button class="nav-btn" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav class="nav" id="nav" aria-label="Primary">
+      <a href="#why">Why</a>
+      <a href="#how">How it works</a>
+      <a href="#house-rules">House rules</a>
+      <a href="#profiles">Profiles</a>
+      <a href="#rules">Rules</a>
+      <a class="btn btn-ghost btn-sm" href="https://github.com/chester-hill-solutions/ratchet-strap">View on GitHub</a>
+      <a class="btn btn-solid btn-sm" href="#install">Get started</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="hero" id="top">
+    <div class="hazard" aria-hidden="true"></div>
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">A ratchet for lint debt</p>
+        <h1>Keep the rules on.<br /><span>Make lint debt only go down.</span></h1>
+        <p class="lead">ESLint finds the violations. RatchetStrap compares them with a baseline you review and commit, so a new one fails the build and a repaired one has to be claimed.</p>
+        <p class="lead lead-sub">No sweep, no disabled rule, no allowance nobody remembers granting.</p>
+        <div class="actions">
+          <a class="btn btn-solid btn-lg" href="#install">Get started</a>
+          <a class="btn btn-ghost btn-lg" href="https://github.com/chester-hill-solutions/ratchet-strap">View on GitHub</a>
+        </div>
+        <div class="install" id="install">
+          <code>bun add --dev ratchet-strap</code>
+          <button class="copy" type="button" data-copy="bun add --dev ratchet-strap">Copy</button>
+        </div>
+        <p class="fine">Also <code class="inline">npm install --save-dev ratchet-strap</code>. Node 20.11 or later. It uses the ESLint you already have.</p>
+      </div>
+      <div class="hero-art">
+        <img src="assets/logo-512.png" alt="A kraft parcel cinched with a red ratchet strap" width="512" height="512" />
+      </div>
+    </div>
+    <div class="proof">
+      <div class="wrap proof-inner">
+        <span>MIT licensed</span>
+        <span>Node 20.11+</span>
+        <span>ESLint-native</span>
+        <span>JSON and exit codes</span>
+        <span>House rules you own</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="sect" id="why">
+    <div class="wrap">
+      <div class="sect-head">
+        <h2>A red check is easy to make green.</h2>
+        <p>Coding agents are good at it: mock the thing under test, retry the flake, raise the timeout, add an <code class="inline">eslint-disable</code>. Every one of those passes CI. RatchetStrap makes the honest path the one that also passes.</p>
+      </div>
+      <ul class="grid4 plain">
+        <li>
+          <span class="num">01</span>
+          <h3>Baseline, not sweep</h3>
+          <p>Accept today's violations once, in a file you review and commit. Keep the rule on.</p>
+        </li>
+        <li>
+          <span class="num">02</span>
+          <h3>Only goes down</h3>
+          <p>An entry that no longer appears is a stale allowance, and it fails the gate too.</p>
+        </li>
+        <li>
+          <span class="num">03</span>
+          <h3>Suppressed still counts</h3>
+          <p>A disabled or suppressed diagnostic is debt. It is not an exemption from debt.</p>
+        </li>
+        <li>
+          <span class="num">04</span>
+          <h3>Cannot be raised</h3>
+          <p>The baseline is compared with a trusted revision, so debt grows only through a reviewed edit.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="sect" id="how">
+    <div class="wrap split">
+      <div class="term" aria-label="Terminal example, abridged">
+        <div class="term-bar"><i></i><i></i><i></i><span>zsh — ratchet-strap</span></div>
+        <pre><code><span class="ln"><span class="p">$</span> ratchet-strap init --rules no-console,complexity --exec-eslint</span>
+<span class="ln"><span class="p">$</span> ratchet-strap check --exec-eslint</span>
+<span class="ln out bad">exit 1 — new violation, stale entry</span>
+<span class="ln"><span class="p">$</span> ratchet-strap tighten --exec-eslint --write</span>
+<span class="ln"><span class="p">$</span> ratchet-strap check --exec-eslint</span>
+<span class="ln out good">exit 0 — clean</span></code></pre>
+      </div>
+      <div>
+        <h2>How it works</h2>
+        <ol class="steps">
+          <li>
+            <span>01</span>
+            <div>
+              <h3>Turn the rules on</h3>
+              <p>Enable the ESLint rules you want to ratchet in your flat config. Warnings are what you track.</p>
+            </div>
+          </li>
+          <li>
+            <span>02</span>
+            <div>
+              <h3>Record what exists</h3>
+              <p><code class="inline">init</code> writes today's diagnostics to <code class="inline">.ratchet-strap.json</code>. Nothing is fixed, nothing is swept.</p>
+            </div>
+          </li>
+          <li>
+            <span>03</span>
+            <div>
+              <h3>Check on every run</h3>
+              <p><code class="inline">check</code> reruns your ESLint scope and never writes. CI runs the same command.</p>
+            </div>
+          </li>
+          <li>
+            <span>04</span>
+            <div>
+              <h3>Claim the fixes</h3>
+              <p><code class="inline">tighten --write</code> removes the entries you repaired. Leaving one behind keeps failing.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="sect" id="baseline">
+    <div class="wrap split split-rev">
+      <div>
+        <h2>Identities, not line numbers</h2>
+        <p class="body">An identity is the relative file, the rule id, the diagnostic message and the occurrence number. Line and column are not part of it, so moving unchanged code within its file does not invalidate the baseline.</p>
+        <ul class="ticks">
+          <li>That is diagnostic, not semantic. A rename or a message change may need a reviewed migration.</li>
+          <li>Count profiles are weaker by design: one repaired violation can offset a new one of the same rule anywhere in scope.</li>
+          <li>Suppressed messages join the same numbering, so silencing one does not remove it.</li>
+          <li>RatchetStrap never downloads ESLint, edits your config or repairs a violation.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-head"><span>baseline</span><span>.ratchet-strap.json</span></div>
+        <pre class="code"><code>{
+  <span class="k">"schemaVersion"</span>: 2,
+  <span class="k">"mode"</span>: "identities",
+  <span class="k">"adapter"</span>: "eslint-identities@1",
+  <span class="k">"identities"</span>: {
+    <span class="k">"max-params"</span>: [
+      "app/mail.js:max-params:Function 'sendMessage' has too
+       many parameters (6). Maximum allowed is 5.#1"
+    ]
+  }
+}</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="sect" id="house-rules">
+    <div class="wrap split">
+      <div>
+        <h2>Your thresholds, not ours</h2>
+        <p class="body">The engine is opinion-free. Limits, named profiles, enabled golden rules and adoption recipes live in a <code class="inline">house-rules/</code> directory your repository owns and reviews.</p>
+        <p class="body">A package upgrade cannot change your limits, your enabled profiles or your exclusions. Only an edit you review can.</p>
+      </div>
+      <div class="card">
+        <div class="card-head"><span>setup</span><span>two commands</span></div>
+        <pre class="code"><code><span class="p">$</span> cp -R node_modules/ratchet-strap/house-rules ./house-rules
+<span class="p">$</span> ratchet-strap rules --house-rules ./house-rules/index.mjs</code></pre>
+        <p class="card-foot">Edit <code class="inline">quality.mjs</code> and <code class="inline">golden.mjs</code>, then keep the directory in version control.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sect" id="profiles">
+    <div class="wrap">
+      <h2>Profiles</h2>
+      <p class="body">A profile selects a comparison mode, an adapter and runner defaults. New projects use <code class="inline">eslint@1</code>; the rest preserve a legacy format that a repository already depends on.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th scope="col">Profile</th><th scope="col">Adapter</th><th scope="col">Comparison</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code class="inline">eslint@1</code> <em>default</em></td><td><code class="inline">eslint-identities@1</code></td><td>New and stale identities fail</td></tr>
+            <tr><td><code class="inline">eslint-counts@1</code></td><td><code class="inline">eslint-json@1</code></td><td>Per-rule warning and suppressed counts cannot grow</td></tr>
+            <tr><td><code class="inline">legacy-counts@1</code></td><td><code class="inline">suppression-counts@1</code></td><td>Preserves legacy suppression-comment accounting</td></tr>
+            <tr><td><code class="inline">legacy-identities@1</code></td><td><code class="inline">identities-cycles@1</code></td><td>Preserves identities, import cycles and predecessor protection</td></tr>
+            <tr><td><code class="inline">legacy-messages@1</code></td><td><code class="inline">message-counts@1</code></td><td>Preserves message counts; keep the preceding lint gate</td></tr>
+            <tr><td><code class="inline">legacy-strict-counts@1</code></td><td><code class="inline">strict-counts@1</code></td><td>Preserves strict suppression budgets with a required Git base</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="fine">Baselines pin their adapter, so <code class="inline">check</code> and <code class="inline">tighten</code> infer the profile. Unknown versions and mixed modes fail; there is no implicit conversion between counts and identities.</p>
+    </div>
+  </section>
+
+  <section class="sect" id="rules">
+    <div class="wrap">
+      <h2>The twelve defaults</h2>
+      <p class="body">Rules that hold in any repository, any language, any framework. Golden profiles are opt-in and supplied by your house rules; the engine ships none.</p>
+      <ul class="ledger plain">
+        <li><span class="rid">U1</span><p>A change that adds a tracked violation fails the gate.</p></li>
+        <li><span class="rid">U2</span><p>A baseline may only lose entries. Never raise one to make a change pass.</p></li>
+        <li><span class="rid">U3</span><p>A suppressed or disabled diagnostic still counts as a violation.</p></li>
+        <li><span class="rid">U4</span><p>A repaired violation must be removed from the baseline.</p></li>
+        <li><span class="rid">U5</span><p>Every exemption is scoped to one rule, one location and one written reason.</p></li>
+        <li><span class="rid">U6</span><p>One local command runs exactly the same checks as CI.</p></li>
+        <li><span class="rid">U7</span><p>Generated artefacts reproduce with no diff.</p></li>
+        <li><span class="rid">U8</span><p>Every gate has a fault and a control fixture proving both directions.</p></li>
+        <li><span class="rid">U9</span><p>No secret value reaches a response, log, span, error or built artefact.</p></li>
+        <li><span class="rid">U10</span><p>A published change carries a version bump and a changelog line.</p></li>
+        <li><span class="rid">U11</span><p>A shared module mock keeps the real export surface.</p></li>
+        <li><span class="rid">U12</span><p>Guarded code cannot opt out of the gate that guards it.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="sect" id="start">
+    <div class="wrap split">
+      <div>
+        <h2>Three commands to stop the bleeding</h2>
+        <p class="body">Your ESLint setup stays where it is. RatchetStrap records what it already reports, then holds the line.</p>
+        <div class="actions">
+          <a class="btn btn-solid" href="https://github.com/chester-hill-solutions/ratchet-strap#readme">Read the docs</a>
+          <a class="btn btn-ghost" href="https://www.npmjs.com/package/ratchet-strap">npm package</a>
+        </div>
+        <p class="fine">Exit codes: <code class="inline">0</code> passed, <code class="inline">1</code> violations or new debt, <code class="inline">2</code> invalid input or tool failure.</p>
+      </div>
+      <div class="card">
+        <div class="card-head"><span>quickstart</span><span>bash</span></div>
+        <pre class="code"><code><span class="p">$</span> ratchet-strap rules
+<span class="p">$</span> ratchet-strap init --rules no-console,complexity --exec-eslint
+<span class="p">$</span> ratchet-strap check --exec-eslint</code></pre>
+        <p class="card-foot">After repairing debt: <code class="inline">ratchet-strap tighten --exec-eslint --write</code>. After enabling another rule: <code class="inline">add --rules no-alert</code>.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-foot">
+  <div class="band">
+    <div class="wrap band-inner">
+      <p>Turn on rules. Ship code. Let the debt come down.</p>
+      <div class="hazard hazard-foot" aria-hidden="true"></div>
+    </div>
+  </div>
+  <div class="wrap foot-grid">
+    <div>
+      <h3>Product</h3>
+      <a href="#why">Why</a>
+      <a href="#how">How it works</a>
+      <a href="#profiles">Profiles</a>
+      <a href="#rules">Golden defaults</a>
+    </div>
+    <div>
+      <h3>Docs</h3>
+      <a href="https://github.com/chester-hill-solutions/ratchet-strap#readme">README</a>
+      <a href="https://github.com/chester-hill-solutions/ratchet-strap/blob/main/CHANGELOG.md">Changelog</a>
+      <a href="https://github.com/chester-hill-solutions/ratchet-strap/blob/main/house-rules/README.md">House rules</a>
+      <a href="https://github.com/chester-hill-solutions/ratchet-strap#api">API</a>
+    </div>
+    <div>
+      <h3>Source</h3>
+      <a href="https://github.com/chester-hill-solutions/ratchet-strap">GitHub</a>
+      <a href="https://github.com/chester-hill-solutions/ratchet-strap/issues">Issues</a>
+      <a href="https://www.npmjs.com/package/ratchet-strap">npm</a>
+    </div>
+    <div>
+      <h3>Legal</h3>
+      <a href="https://github.com/chester-hill-solutions/ratchet-strap/blob/main/LICENSE">MIT licence</a>
+      <span class="muted">Chester Hill Solutions</span>
+    </div>
+  </div>
+  <div class="wrap foot-base">
+    <span>RatchetStrap <span class="muted">v0.7.0</span></span>
+    <span class="muted">MIT · open source</span>
+  </div>
+</footer>
+
+<script>
+  const btn = document.querySelector(".nav-btn");
+  const nav = document.querySelector("#nav");
+  btn?.addEventListener("click", () => {
+    const open = nav.classList.toggle("open");
+    btn.setAttribute("aria-expanded", String(open));
+    btn.textContent = open ? "Close" : "Menu";
+  });
+  nav?.addEventListener("click", (e) => {
+    if (e.target.closest("a") && nav.classList.contains("open")) {
+      nav.classList.remove("open");
+      btn.setAttribute("aria-expanded", "false");
+      btn.textContent = "Menu";
+    }
+  });
+  for (const b of document.querySelectorAll(".copy")) {
+    b.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(b.dataset.copy);
+        b.textContent = "Copied";
+      } catch {
+        b.textContent = "Select it";
+      }
+      setTimeout(() => (b.textContent = "Copy"), 1600);
+    });
+  }
+</script>
+</body>
+</html>
