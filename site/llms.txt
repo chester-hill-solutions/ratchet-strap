@@ -1,0 +1,25 @@
+# RatchetStrap
+
+> An ESLint-native CLI that records the lint violations a repository already has in a committed baseline, fails the build on any new one, and fails again when a repaired violation is left stale.
+
+Published as `@chester-hill-solutions/ratchet-strap` on npm. MIT licence, Node 20.11 or later. It ships no ESLint and changes no configuration; ESLint does the detection and RatchetStrap compares its output with `.ratchet-strap.json`.
+
+## Read this first
+
+- [README](https://github.com/chester-hill-solutions/ratchet-strap/blob/main/README.md): install, quick start, profiles, baseline format, limits.
+- [Changelog](https://github.com/chester-hill-solutions/ratchet-strap/blob/main/CHANGELOG.md): released behaviour, newest first.
+- [House rules](https://github.com/chester-hill-solutions/ratchet-strap/blob/main/house-rules/README.md): the `house-rules/` directory a consumer owns, which holds thresholds and enabled profiles.
+
+## Facts an agent should not guess
+
+- Commands: `ratchet-strap rules | profiles | init | check | tighten | add | inspect | migrate | verify`.
+- `check` never writes. `tighten`, `add` and `migrate` preview unless `--write` is passed.
+- Exit codes: 0 passed, 1 violations or new debt, 2 invalid input or tool failure. Output is JSON.
+- The default baseline is `.ratchet-strap.json` (`--baseline FILE` overrides it).
+- An identity is the file, rule id, diagnostic message and occurrence number; line and column are not part of it.
+- A suppressed or disabled diagnostic still counts. A repaired violation must be removed from the baseline.
+- `eslint@1` is the recommended profile. Count profiles are weaker by design: one repaired violation can offset a new one of the same rule anywhere in scope.
+
+## Evaluate fit
+
+The page at https://ratchetstrap.chsolutions.ca/ carries a copyable prompt under "Let your agent decide" that asks a coding agent to measure the repository's current ESLint output, find the CI job, and return an adopt / not-a-fit verdict without changing anything.

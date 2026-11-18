@@ -6,11 +6,57 @@
 <title>RatchetStrap — ratchet away the slop</title>
 <meta name="description" content="Make ESLint improve your code. Set your rules, keep the slop out, and tighten up what you already have. New violations fail the build; repaired ones have to be removed." />
 <meta name="theme-color" content="#0d0d0f" />
+<link rel="canonical" href="https://ratchetstrap.chsolutions.ca/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta property="og:site_name" content="RatchetStrap" />
 <meta property="og:title" content="RatchetStrap — ratchet away the slop" />
-<meta property="og:description" content="Keep the rules on. Accept today's violations once, then fail the build on every new one." />
+<meta property="og:description" content="Make ESLint improve your code. Set your rules, keep the slop out, and tighten up what you already have." />
 <meta property="og:type" content="website" />
-<meta property="og:image" content="https://raw.githubusercontent.com/chester-hill-solutions/ratchet-strap/main/site/assets/og.png" />
+<meta property="og:url" content="https://ratchetstrap.chsolutions.ca/" />
+<meta property="og:image" content="https://ratchetstrap.chsolutions.ca/assets/og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="A kraft parcel cinched with a red ratchet strap, next to the words: let the agents code, and ratchet away the slop." />
 <meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="RatchetStrap — ratchet away the slop" />
+<meta name="twitter:description" content="Make ESLint improve your code. Set your rules, keep the slop out, and tighten up what you already have." />
+<meta name="twitter:image" content="https://ratchetstrap.chsolutions.ca/assets/og.png" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://chsolutions.ca/#organization",
+      "name": "Chester Hill Solutions",
+      "url": "https://chsolutions.ca"
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://ratchetstrap.chsolutions.ca/#website",
+      "url": "https://ratchetstrap.chsolutions.ca/",
+      "name": "RatchetStrap",
+      "publisher": { "@id": "https://chsolutions.ca/#organization" }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://ratchetstrap.chsolutions.ca/#software",
+      "name": "RatchetStrap",
+      "description": "An ESLint-native CLI that records existing lint violations in a committed baseline, fails the build on new ones, and fails again when a repaired violation is left stale.",
+      "applicationCategory": "DeveloperApplication",
+      "applicationSubCategory": "Linter",
+      "operatingSystem": "Node.js 20.11 or later",
+      "softwareVersion": "0.7.1",
+      "url": "https://ratchetstrap.chsolutions.ca/",
+      "codeRepository": "https://github.com/chester-hill-solutions/ratchet-strap",
+      "license": "https://opensource.org/license/mit",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "publisher": { "@id": "https://chsolutions.ca/#organization" }
+    }
+  ]
+}
+</script>
 <link rel="icon" href="assets/logo-128.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -53,6 +99,49 @@
       </div>
       <div class="hero-art">
         <img src="assets/logo-512.png" alt="A kraft parcel cinched with a red ratchet strap" width="512" height="512" />
+      </div>
+    </div>
+  </section>
+
+  <section class="sect" id="fit">
+    <div class="wrap">
+      <div class="split">
+        <div>
+          <h2>Let your agent decide.</h2>
+          <p class="body">Paste this into the agent that already knows your repository. It measures what ESLint reports today, finds the CI job that would run the gate, and tells you whether adopting this is a one-command change or a migration.</p>
+          <p class="body">It reports and stops. Nothing is installed, no config is edited, no baseline is written.</p>
+          <ul class="ticks">
+            <li>A verdict: adopt, adopt after one fix, or not a fit.</li>
+            <li>The count it would baseline on day one, per rule.</li>
+            <li>The exact CI job and command that would run the gate.</li>
+            <li>The rules that must stay errors, so the baseline cannot hide them.</li>
+          </ul>
+          <p class="fine">Works in Claude Code, Codex, Cursor, or anything with shell access to your repo.</p>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <span>agent prompt</span>
+            <button class="copy" type="button" data-copy-target="#agent-prompt">Copy prompt</button>
+          </div>
+          <pre class="code agent-prompt" id="agent-prompt">You are deciding whether the npm package ratchet-strap fits this repository. Report only: do not install anything, edit config, or write a baseline.
+
+What it does: ESLint does the detection. RatchetStrap records the violations that already exist in a committed .ratchet-strap.json, fails the build on any new one, and fails again when a repaired violation is left in the baseline. Commands: ratchet-strap init | check | tighten | add | rules | profiles | migrate. Exit codes 0 pass, 1 violations, 2 bad input.
+
+Inspect this repository and answer:
+1. Is ESLint installed, and is there a flat config? What does `eslint . --format json` report today: total violations, errors vs warnings, and the top five rule ids?
+2. Is lint run in CI, on which trigger, and with what command? Does an existing ratchet, baseline or max-warnings budget already exist?
+3. Who changes lint config: how many contributors, and do coding agents commit here?
+4. Which of these rules would need to stay errors rather than baselined warnings?
+
+Then decide, in this shape:
+- Verdict: adopt / adopt after one fix / not a fit
+- Day-one baseline: the counts you would accept, per rule
+- Hook point: the exact CI job and command to replace
+- Risks: stale entries, renamed files, count-profile drift, agent gaming
+- If not a fit: the smaller alternative, such as fixing the violations or setting --max-warnings
+
+Base every number on output you ran, and quote the command that produced it.</pre>
+        </div>
       </div>
     </div>
   </section>
@@ -143,7 +232,7 @@
         <li>
           <span class="num">04</span>
           <h3>Cannot be raised</h3>
-          <p>Compare against a trusted revision. Debt grows only in a diff someone approved.</p>
+          <p>Given a predecessor. Pass <code class="inline">--previous-baseline</code>, or fetch full history in CI, and a raised baseline fails.</p>
         </li>
       </ul>
     </div>
@@ -233,95 +322,15 @@
         </div>
       <div class="card">
         <div class="card-head"><span>setup</span><span>two commands</span></div>
-        <pre class="code"><code><span class="p">$</span> cp -R node_modules/@chester-hill-solutions/ratchet-strap/house-rules ./house-rules
+        <pre class="code cmd"><code><span class="p">$</span> cp -R node_modules/@chester-hill-solutions/ratchet-strap/house-rules ./house-rules
 <span class="p">$</span> ratchet-strap rules --house-rules ./house-rules/index.mjs</code></pre>
         <p class="card-foot">Edit <code class="inline">quality.mjs</code> and <code class="inline">golden.mjs</code>, then keep the directory in version control.</p>
       </div>
     </div>
   </section>
 
-  <section class="sect" id="profiles">
-    <div class="wrap">
-      <h2>Profiles</h2>
-      <p class="body">Pick a comparison mode and an adapter. New projects start on <code class="inline">eslint@1</code>. Already carrying a count budget? Adopt <code class="inline">eslint-counts@1</code> deliberately.</p>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th scope="col">Profile</th><th scope="col">Adapter</th><th scope="col">Comparison</th></tr>
-          </thead>
-          <tbody>
-            <tr><td data-label="Profile"><code class="inline">eslint@1</code> <em>default</em></td><td data-label="Adapter"><code class="inline">eslint-identities@1</code></td><td data-label="Comparison">New and stale identities fail</td></tr>
-            <tr><td data-label="Profile"><code class="inline">eslint-counts@1</code></td><td data-label="Adapter"><code class="inline">eslint-json@1</code></td><td data-label="Comparison">Per-rule warning and suppressed counts cannot grow</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="fine">Baselines pin their adapter, so <code class="inline">check</code> and <code class="inline">tighten</code> infer the profile. Unknown versions and mixed modes fail. Counts never silently become identities.</p>
-    </div>
-  </section>
 
-  <section class="sect" id="rules">
-    <div class="wrap">
-      <h2>The twelve defaults</h2>
-      <p class="body">These hold in any repository, any language, any framework. Golden profiles are opt-in and live in your house rules; the engine ships none.</p>
-      <ul class="ledger plain">
-        <li><span class="rid">U1</span><p>A change that adds a tracked violation fails the gate.</p></li>
-        <li><span class="rid">U2</span><p>A baseline may only lose entries. Never raise one to make a change pass.</p></li>
-        <li><span class="rid">U3</span><p>A suppressed or disabled diagnostic still counts as a violation.</p></li>
-        <li><span class="rid">U4</span><p>A repaired violation must be removed from the baseline.</p></li>
-        <li><span class="rid">U5</span><p>Every exemption is scoped to one rule, one location and one written reason.</p></li>
-        <li><span class="rid">U6</span><p>One local command runs exactly the same checks as CI.</p></li>
-        <li><span class="rid">U7</span><p>Generated artefacts reproduce with no diff.</p></li>
-        <li><span class="rid">U8</span><p>Every gate has a fault and a control fixture proving both directions.</p></li>
-        <li><span class="rid">U9</span><p>No secret value reaches a response, log, span, error or built artefact.</p></li>
-        <li><span class="rid">U10</span><p>A published change carries a version bump and a changelog line.</p></li>
-        <li><span class="rid">U11</span><p>A shared module mock keeps the real export surface.</p></li>
-        <li><span class="rid">U12</span><p>Guarded code cannot opt out of the gate that guards it.</p></li>
-      </ul>
-      <p class="fine">U1–U4 are enforced by this engine. U5 and U12 are review. The rest are consumer gates; the README names the mechanism for each.</p>
-    </div>
-  </section>
 
-  <section class="sect" id="fit">
-    <div class="wrap">
-      <div class="split">
-        <div>
-          <h2>Let your agent decide.</h2>
-          <p class="body">Paste this into the agent that already knows your repository. It measures what ESLint reports today, finds the CI job that would run the gate, and tells you whether adopting this is a one-command change or a migration.</p>
-          <p class="body">It reports and stops. Nothing is installed, no config is edited, no baseline is written.</p>
-          <ul class="ticks">
-            <li>A verdict: adopt, adopt after one fix, or not a fit.</li>
-            <li>The count it would baseline on day one, per rule.</li>
-            <li>The exact CI job and command that would run the gate.</li>
-          </ul>
-          <p class="fine">Works in Claude Code, Codex, Cursor, or anything with shell access to your repo.</p>
-        </div>
-        <div class="card">
-          <div class="card-head">
-            <span>agent prompt</span>
-            <button class="copy" type="button" data-copy-target="#agent-prompt">Copy prompt</button>
-          </div>
-          <pre class="code agent-prompt" id="agent-prompt">You are deciding whether the npm package ratchet-strap fits this repository. Report only: do not install anything, edit config, or write a baseline.
-
-What it does: ESLint does the detection. RatchetStrap records the violations that already exist in a committed .ratchet-strap.json, fails the build on any new one, and fails again when a repaired violation is left in the baseline. Commands: ratchet-strap init | check | tighten | add | rules | profiles | migrate. Exit codes 0 pass, 1 violations, 2 bad input.
-
-Inspect this repository and answer:
-1. Is ESLint installed, and is there a flat config? What does `eslint . --format json` report today: total violations, errors vs warnings, and the top five rule ids?
-2. Is lint run in CI, on which trigger, and with what command? Does an existing ratchet, baseline or max-warnings budget already exist?
-3. Who changes lint config: how many contributors, and do coding agents commit here?
-4. Which of these rules would need to stay errors rather than baselined warnings?
-
-Then decide, in this shape:
-- Verdict: adopt / adopt after one fix / not a fit
-- Day-one baseline: the counts you would accept, per rule
-- Hook point: the exact CI job and command to replace
-- Risks: stale entries, renamed files, count-profile drift, agent gaming
-- If not a fit: the smaller alternative, such as fixing the violations or setting --max-warnings
-
-Base every number on output you ran, and quote the command that produced it.</pre>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <section class="sect" id="start">
     <div class="wrap split">
@@ -332,11 +341,12 @@ Base every number on output you ran, and quote the command that produced it.</pr
           <a class="btn btn-solid" href="https://github.com/chester-hill-solutions/ratchet-strap#readme">Read the docs</a>
           <a class="btn btn-ghost" href="https://www.npmjs.com/package/ratchet-strap">npm package</a>
         </div>
+        <p class="fine">Reference, not on this page: <a href="https://github.com/chester-hill-solutions/ratchet-strap#profiles-and-baselines">profiles</a> and <a href="https://github.com/chester-hill-solutions/ratchet-strap#golden-defaults">the twelve golden defaults</a>.</p>
         <p class="fine">Exit codes: <code class="inline">0</code> passed, <code class="inline">1</code> violations or new debt, <code class="inline">2</code> invalid input or tool failure.</p>
       </div>
       <div class="card">
         <div class="card-head"><span>quickstart</span><span>bash</span></div>
-        <pre class="code"><code><span class="p">$</span> ratchet-strap rules
+        <pre class="code cmd"><code><span class="p">$</span> ratchet-strap rules
 <span class="p">$</span> ratchet-strap init --rules no-console,complexity --exec-eslint
 <span class="p">$</span> ratchet-strap check --exec-eslint</code></pre>
         <p class="card-foot">After repairing debt: <code class="inline">ratchet-strap tighten --exec-eslint --write</code>. After enabling another rule: <code class="inline">add --rules no-alert</code>.</p>
@@ -358,7 +368,7 @@ Base every number on output you ran, and quote the command that produced it.</pr
     </div>
   </div>
   <div class="wrap foot-row">
-    <p><span>RatchetStrap <span class="muted">v0.7.0</span> · MIT</span> <span class="co">Chester Hill Solutions</span></p>
+    <p><span>RatchetStrap <span class="muted">v0.7.1</span> · MIT</span> <span class="co">Chester Hill Solutions</span></p>
     <nav class="foot-links" aria-label="Project">
       <a href="https://github.com/chester-hill-solutions/ratchet-strap#readme">README</a>
       <a href="https://github.com/chester-hill-solutions/ratchet-strap/blob/main/CHANGELOG.md">Changelog</a>
@@ -366,30 +376,14 @@ Base every number on output you ran, and quote the command that produced it.</pr
       <a href="https://github.com/chester-hill-solutions/ratchet-strap/issues">Issues</a>
       <a href="https://github.com/chester-hill-solutions/ratchet-strap">GitHub</a>
       <a href="https://www.npmjs.com/package/ratchet-strap">npm</a>
+      <a href="/llms.txt">llms.txt</a>
     </nav>
   </div>
 </footer>
 
 <div class="sr-only" role="status" aria-live="polite" id="copy-status"></div>
 
-<script>
-  for (const b of document.querySelectorAll(".copy")) {
-    b.addEventListener("click", async () => {
-      const target = b.dataset.copyTarget;
-      const text = target
-        ? document.querySelector(target).textContent.trim()
-        : b.dataset.copy;
-      const label = b.textContent;
-      try {
-        await navigator.clipboard.writeText(text);
-        b.textContent = "Copied";
-        document.getElementById("copy-status").textContent = label + " copied";
-      } catch {
-        b.textContent = "Select it";
-      }
-      setTimeout(() => (b.textContent = label), 1600);
-    });
-  }
-</script>
+<script defer src="https://stats.chesterhillsolutions.ca/b.js" data-site="ratchetstrap.chsolutions.ca"></script>
+<script src="app.js" defer></script>
 </body>
 </html>

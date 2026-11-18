@@ -392,6 +392,7 @@ section[id], #install { scroll-margin-top: 84px; }
   white-space: pre;
   tab-size: 2;
 }
+.code.cmd { white-space: pre-wrap; overflow-wrap: anywhere; }
 .code .k { color: #ff9a8d; }
 
 .examples .card { display: flex; flex-direction: column; }
@@ -705,3 +706,26 @@ td em {
   tab-size: 2;
 }
 .card-head .copy { margin: -4px 0; }
+
+/* ---------- 404 ---------- */
+
+.notfound {
+  display: grid;
+  align-items: center;
+  min-height: 100vh;
+  padding: 96px 0;
+}
+.nf-code {
+  font: 500 0.78rem/1 var(--mono);
+  letter-spacing: 0.2em;
+  color: var(--red);
+  margin: 0 0 22px;
+}
+.notfound .lead { margin-top: 22px; }
+.notfound .actions { margin-top: 34px; }
+
+.fine a {
+  color: var(--ink-2);
+  border-bottom: 1px solid #3a3a40;
+}
+.fine a:hover { color: var(--ink); border-bottom-color: var(--red); }
